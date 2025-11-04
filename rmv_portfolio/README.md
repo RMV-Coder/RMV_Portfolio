@@ -1,36 +1,121 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🌟 Raymond Valdepeñas - Portfolio Website
 
-## Getting Started
+A modern, responsive portfolio website built with Next.js 15, showcasing my skills as a Full Stack Developer with expertise in web development, embedded systems, and AI/ML technologies.
 
-First, run the development server:
+## 🚀 Live Demo
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+Visit the live portfolio: [raymondvaldepenas.dev](https://raymondvaldepenas.dev)
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## ✨ Features
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### 🎨 **Modern Design**
+- Clean, professional interface
+- Dark/Light theme toggle
+- Smooth animations with Framer Motion
+- Responsive design for all devices
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 🛠 **Technical Highlights**
+- **Next.js 15** with App Router
+- **TypeScript** for type safety
+- **Tailwind CSS** for styling
+- **Framer Motion** for animations
+- **React Hook Form** with Zod validation
+- **SWR** for data fetching
 
-## Learn More
+### 📊 **Dynamic Content**
+- GitHub API integration for live project data
+- Real-time project filtering and search
+- Dynamic skills showcase with categorization
+- Interactive contact form with email notifications
 
-To learn more about Next.js, take a look at the following resources:
+### ⚡ **Performance Optimized**
+- Server-side rendering (SSR)
+- Code splitting with dynamic imports
+- Image optimization with Next.js Image
+- SEO optimized with structured data
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 🛠 **Technologies Used**
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### **Frontend**
+- Next.js 15, React 18, TypeScript
+- Tailwind CSS, Framer Motion
+- React Hook Form, Zod validation
+- SWR, Axios
 
-## Deploy on Vercel
+### **Backend & APIs**
+- Next.js API Routes
+- Nodemailer for email
+- GitHub API integration
+- Rate limiting and caching
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 🚀 **Getting Started**
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### Prerequisites
+- Node.js 18+ and npm
+- Git
+
+### Installation
+
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/RMV-Coder/RMV_Portfolio.git
+   cd RMV_Portfolio/rmv_portfolio
+   ```
+
+2. **Install dependencies:**
+
+   ```bash
+   npm install
+   ```
+
+3. **Set up environment variables:**
+   ```bash
+   cp .env.example .env.local
+   ```
+   Edit `.env.local` with your configuration:
+   ```env
+   SMTP_HOST=smtp.gmail.com
+   SMTP_PORT=587
+   SMTP_USER=your.email@gmail.com
+   SMTP_PASS=your_app_password
+   CONTACT_EMAIL=your.email@gmail.com
+   ```
+
+4. **Run the development server:**
+   ```bash
+   npm run dev
+   ```
+
+5. **Open [http://localhost:3000](http://localhost:3000)**
+
+## 📝 **Customization Guide**
+
+### **Personal Information**
+1. Update contact details in `src/components/contact-section.tsx`
+2. Replace bio content in `src/components/about-section.tsx`
+3. Add your skills in `src/data/skills.tsx`
+4. Update social links throughout components
+
+### **Content**
+1. Add your resume as `public/resume.pdf`
+2. Replace profile photo in `public/` directory
+3. Update metadata in `src/app/layout.tsx`
+
+## 🚀 **Deployment**
+
+### **Vercel (Recommended)**
+1. Connect your GitHub repository to Vercel
+2. Add environment variables in dashboard
+3. Deploy automatically on push
+
+See detailed deployment guide in [DEPLOYMENT.md](./DEPLOYMENT.md)
+
+## 📞 **Contact**
+
+- **Email:** raymondvaldepenas.dev@gmail.com
+- **GitHub:** [@RMV-Coder](https://github.com/RMV-Coder)
+- **Location:** Tangub City, Philippines
+
+---
+
+**Built with ❤️ by Raymond Valdepeñas**

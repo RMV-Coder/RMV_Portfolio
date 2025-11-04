@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { //Geist, Geist_Mono, 
   Montserrat } from "next/font/google";
 import "./globals.css";
+import { ThemeProvider } from "@/components/theme-provider";
+import { structuredData, websiteStructuredData, professionalServiceStructuredData } from "@/lib/structured-data";
 
 const montserrat = Montserrat({
   variable: "--font-montserrat",
@@ -20,8 +22,70 @@ const montserrat = Montserrat({
 // });
 
 export const metadata: Metadata = {
-  title: "Raymond Valdepeñas",
-  description: "A fullstack developer.",
+  metadataBase: new URL('https://raymondvaldepenas.dev'),
+  title: {
+    default: "Raymond Valdepeñas - Full Stack Developer",
+    template: "%s | Raymond Valdepeñas"
+  },
+  description: "Passionate Full Stack Developer from Tangub City, Philippines. Specializing in React, Next.js, Node.js, and modern web technologies. Let's build something amazing together!",
+  keywords: [
+    "Raymond Valdepeñas",
+    "Full Stack Developer",
+    "React Developer",
+    "Next.js Developer",
+    "Node.js Developer",
+    "JavaScript",
+    "TypeScript",
+    "Web Developer",
+    "Philippines",
+    "Tangub City",
+    "Frontend Developer",
+    "Backend Developer",
+    "Software Engineer"
+  ],
+  authors: [{ name: "Raymond Valdepeñas" }],
+  creator: "Raymond Valdepeñas",
+  publisher: "Raymond Valdepeñas",
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
+  openGraph: {
+    type: "website",
+    locale: "en_US",
+    url: "https://raymondvaldepenas.dev",
+    title: "Raymond Valdepeñas - Full Stack Developer",
+    description: "Passionate Full Stack Developer from Tangub City, Philippines. Specializing in React, Next.js, Node.js, and modern web technologies.",
+    siteName: "Raymond Valdepeñas Portfolio",
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "Raymond Valdepeñas - Full Stack Developer",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Raymond Valdepeñas - Full Stack Developer",
+    description: "Passionate Full Stack Developer from Tangub City, Philippines. Specializing in React, Next.js, Node.js, and modern web technologies.",
+    images: ["/og-image.png"],
+    creator: "@your-twitter-handle",
+  },
+  verification: {
+    google: "your-google-verification-code",
+  },
+  alternates: {
+    canonical: "https://raymondvaldepenas.dev",
+  },
 };
 
 export default function RootLayout({
@@ -30,11 +94,141 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        {/* Security headers for screenshot protection */}
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+        <meta httpEquiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'self' https://api.github.com;" />
+        <meta name="referrer" content="strict-origin-when-cross-origin" />
+        
+        {/* Prevent right-click and screenshot attempts */}
+        <style dangerouslySetInnerHTML={{
+          __html: `
+            * {
+              -webkit-user-select: none !important;
+              -moz-user-select: none !important;
+              -ms-user-select: none !important;
+              user-select: none !important;
+              -webkit-touch-callout: none !important;
+              -webkit-user-drag: none !important;
+              -khtml-user-drag: none !important;
+              -moz-user-drag: none !important;
+              -o-user-drag: none !important;
+              user-drag: none !important;
+            }
+            
+            /* Allow text selection for specific content areas */
+            .selectable-text {
+              -webkit-user-select: text !important;
+              -moz-user-select: text !important;
+              -ms-user-select: text !important;
+              user-select: text !important;
+            }
+            
+            /* Prevent screenshot overlay */
+            body::before {
+              content: '';
+              position: fixed;
+              top: 0;
+              left: 0;
+              width: 100%;
+              height: 100%;
+              background: transparent;
+              z-index: 999999;
+              pointer-events: none;
+              -webkit-user-select: none;
+              -moz-user-select: none;
+              -ms-user-select: none;
+              user-select: none;
+            }
+            
+            /* Hide from print */
+            @media print {
+              body { display: none !important; }
+            }
+            
+            /* Prevent dev tools detection */
+            body {
+              -webkit-user-select: none;
+              -moz-user-select: none;
+              -ms-user-select: none;
+              user-select: none;
+            }
+          `
+        }} />
+        
+        {/* Anti-screenshot script */}
+        <script dangerouslySetInnerHTML={{
+          __html: `
+            // Disable right-click context menu
+            document.addEventListener('contextmenu', function(e) {
+              e.preventDefault();
+              return false;
+            });
+            
+            // Disable keyboard shortcuts
+            document.addEventListener('keydown', function(e) {
+              // Disable F12, Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+U, Ctrl+S, Print Screen
+              if (e.keyCode === 123 || 
+                  (e.ctrlKey && e.shiftKey && (e.keyCode === 73 || e.keyCode === 74)) ||
+                  (e.ctrlKey && e.keyCode === 85) ||
+                  (e.ctrlKey && e.keyCode === 83) ||
+                  e.keyCode === 44) {
+                e.preventDefault();
+                return false;
+              }
+            });
+            
+            // Disable text selection
+            document.addEventListener('selectstart', function(e) {
+              if (!e.target.closest('.selectable-text')) {
+                e.preventDefault();
+                return false;
+              }
+            });
+            
+            // Disable drag events
+            document.addEventListener('dragstart', function(e) {
+              e.preventDefault();
+              return false;
+            });
+            
+            // Console warning
+            console.warn('🚫 Screenshots and content downloading are disabled for security reasons.');
+            console.warn('⚠️ This portfolio is protected by security measures.');
+          `
+        }} />
+        
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(structuredData),
+          }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(websiteStructuredData),
+          }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(professionalServiceStructuredData),
+          }}
+        />
+      </head>
       <body
         className={`${montserrat.variable} antialiased`}
       >
-        {children}
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="dark"
+          enableSystem
+          disableTransitionOnChange
+        >
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   );
