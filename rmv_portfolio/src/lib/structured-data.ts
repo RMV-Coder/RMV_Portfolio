@@ -4,7 +4,7 @@ export const structuredData = {
   name: "Raymond Valdepeñas",
   jobTitle: "Full Stack Developer",
   description: "Passionate Full Stack Developer specializing in React, Next.js, Node.js, and modern web technologies.",
-  url: "https://raymondvaldepenas.dev",
+  url: "https://raymondvaldepenas-dev.vercel.app",
   email: "raymondvaldepenas.dev@gmail.com",
   telephone: "+639667324567",
   address: {
@@ -15,7 +15,7 @@ export const structuredData = {
   sameAs: [
     "https://github.com/RMV-Coder",
     "https://linkedin.com/in/raymond-valdepenas",
-    "https://twitter.com/your-handle"
+    "https://twitter.com/mond_valdepenas"
   ],
   knowsAbout: [
     "JavaScript",
@@ -50,7 +50,7 @@ export const websiteStructuredData = {
   "@type": "WebSite",
   name: "Raymond Valdepeñas Portfolio",
   description: "Portfolio website showcasing the work and skills of Raymond Valdepeñas, a Full Stack Developer from the Philippines.",
-  url: "https://raymondvaldepenas.dev",
+  url: "https://raymondvaldepenas-dev.vercel.app",
   author: {
     "@type": "Person",
     name: "Raymond Valdepeñas"

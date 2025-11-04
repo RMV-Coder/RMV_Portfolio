@@ -4,7 +4,7 @@ A modern, responsive portfolio website built with Next.js 15, showcasing my skil
 
 ## 🚀 Live Demo
 
-Visit the live portfolio: [raymondvaldepenas.dev](https://raymondvaldepenas.dev)
+Visit the live portfolio: [raymondvaldepenas.dev](https://raymondvaldepenas-dev.vercel.app)
 
 ## ✨ Features
 

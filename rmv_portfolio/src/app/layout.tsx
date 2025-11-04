@@ -22,7 +22,7 @@ const montserrat = Montserrat({
 // });
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://raymondvaldepenas.dev'),
+  metadataBase: new URL('https://raymondvaldepenas-dev.vercel.app'),
   title: {
     default: "Raymond Valdepeñas - Full Stack Developer",
     template: "%s | Raymond Valdepeñas"
@@ -60,7 +60,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: "https://raymondvaldepenas.dev",
+    url: "https://raymondvaldepenas-dev.vercel.app",
     title: "Raymond Valdepeñas - Full Stack Developer",
     description: "Passionate Full Stack Developer from Tangub City, Philippines. Specializing in React, Next.js, Node.js, and modern web technologies.",
     siteName: "Raymond Valdepeñas Portfolio",
@@ -78,13 +78,13 @@ export const metadata: Metadata = {
     title: "Raymond Valdepeñas - Full Stack Developer",
     description: "Passionate Full Stack Developer from Tangub City, Philippines. Specializing in React, Next.js, Node.js, and modern web technologies.",
     images: ["/og-image.png"],
-    creator: "@your-twitter-handle",
+    creator: "@mond_valdepenas",
   },
   verification: {
     google: "your-google-verification-code",
   },
   alternates: {
-    canonical: "https://raymondvaldepenas.dev",
+    canonical: "https://raymondvaldepenas-dev.vercel.app",
   },
 };
 

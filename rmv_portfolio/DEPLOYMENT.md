@@ -104,7 +104,7 @@ SEND_AUTO_REPLY=true
    Type: CNAME Name: www   Value: yourdomain.com
    ```
 3. **Update Code:**
-   - Change `https://raymondvaldepenas.dev` to your domain
+   - Change `https://raymondvaldepenas-dev.vercel.app` to your domain
    - Update in `layout.tsx`, `sitemap.ts`, `robots.ts`
 
 ## Performance Optimization
