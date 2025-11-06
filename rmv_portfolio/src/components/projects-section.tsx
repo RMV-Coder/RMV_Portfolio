@@ -1,12 +1,22 @@
 "use client"
 
 import * as React from "react"
+import Link from "next/link"
 import { motion } from "framer-motion"
 import useSWR from "swr"
-import { Search, Filter, Github, Loader2, AlertCircle, RefreshCw } from "lucide-react"
+import { Search, Github, Loader2, AlertCircle, RefreshCw, Filter } from "lucide-react"
 import { githubService } from "@/lib/github"
 import { ProjectCard } from "@/components/project-card"
-import type { EnhancedProject, ProjectFilters } from "@/app/interface/github"
+import { Button } from "@/components/ui/button"
+import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import type { EnhancedProject } from "@/app/interface/github"
 
 const fetcher = () => githubService.getEnhancedProjects()
 
@@ -21,15 +31,13 @@ export function ProjectsSection() {
     }
   )
 
-  const [filters, setFilters] = React.useState<ProjectFilters>({
+  const [filters, setFilters] = React.useState<{
+    search: string
+    language: string[]
+  }>({
     search: '',
-    status: [],
-    category: [],
-    language: [],
-    featured: false
+    language: []
   })
-
-  const [showFilters, setShowFilters] = React.useState(false)
 
   // Filter projects based on current filters
   const filteredProjects = React.useMemo(() => {
@@ -48,25 +56,6 @@ export function ProjectsSection() {
         }
       }
 
-      // Featured filter
-      if (filters.featured && !project.metadata?.featured) {
-        return false
-      }
-
-      // Status filter
-      if (filters.status && filters.status.length > 0) {
-        if (!project.metadata?.status || !filters.status.includes(project.metadata.status)) {
-          return false
-        }
-      }
-
-      // Category filter
-      if (filters.category && filters.category.length > 0) {
-        if (!project.metadata?.category || !filters.category.includes(project.metadata.category)) {
-          return false
-        }
-      }
-
       // Language filter
       if (filters.language && filters.language.length > 0) {
         if (!project.primaryLanguage || !filters.language.includes(project.primaryLanguage)) {
@@ -78,28 +67,29 @@ export function ProjectsSection() {
     })
   }, [projects, filters])
 
-  // Get unique values for filter options
-  const filterOptions = React.useMemo(() => {
-    if (!projects) return { languages: [], categories: [], statuses: [] }
-
-    const languages = [...new Set(projects.map(p => p.primaryLanguage).filter(Boolean))]
-    const categories = [...new Set(projects.map(p => p.metadata?.category).filter(Boolean))]
-    const statuses = [...new Set(projects.map(p => p.metadata?.status).filter(Boolean))]
-
-    return { languages, categories, statuses }
+  // Get unique languages for filter options
+  const availableLanguages = React.useMemo(() => {
+    if (!projects) return []
+    const languages = projects
+      .map(p => p.primaryLanguage)
+      .filter((lang): lang is string => Boolean(lang))
+      .filter((lang, index, arr) => arr.indexOf(lang) === index)
+    return languages.sort()
   }, [projects])
 
-  const handleFilterChange = (key: keyof ProjectFilters, value: string | string[] | boolean) => {
-    setFilters(prev => ({ ...prev, [key]: value }))
+  const handleLanguageFilter = (language: string, checked: boolean) => {
+    setFilters(prev => ({
+      ...prev,
+      language: checked
+        ? [...prev.language, language]
+        : prev.language.filter(lang => lang !== language)
+    }))
   }
 
   const clearFilters = () => {
     setFilters({
       search: '',
-      status: [],
-      category: [],
-      language: [],
-      featured: false
+      language: []
     })
   }
 
@@ -125,107 +115,94 @@ export function ProjectsSection() {
           </p>
 
           {/* Search and Filter Controls */}
-          <div className="flex flex-col sm:flex-row gap-4 items-center justify-center max-w-2xl mx-auto">
+          <div className="flex flex-col sm:flex-row gap-4 items-center justify-center max-w-4xl mx-auto">
             {/* Search */}
-            <div className="relative flex-1 w-full">
+            <div className="relative flex-1 w-full max-w-md">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
               <input
                 type="text"
                 placeholder="Search projects..."
                 value={filters.search}
-                onChange={(e) => handleFilterChange('search', e.target.value)}
+                onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value }))}
                 className="w-full pl-10 pr-4 py-2 bg-muted border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
               />
             </div>
 
-            {/* Filter Toggle */}
-            <button
-              onClick={() => setShowFilters(!showFilters)}
-              className="flex items-center gap-2 px-4 py-2 bg-muted hover:bg-muted/80 border border-border rounded-lg transition-colors"
-            >
-              <Filter className="w-4 h-4" />
-              Filters
-            </button>
+            {/* Language Filter Dropdown */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" className="flex items-center gap-2">
+                  <Filter className="w-4 h-4" />
+                  Languages
+                  {filters.language.length > 0 && (
+                    <span className="ml-1 px-1.5 py-0.5 bg-primary text-primary-foreground text-xs rounded-full">
+                      {filters.language.length}
+                    </span>
+                  )}
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-56">
+                <DropdownMenuLabel>Filter by Language</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                {availableLanguages.length > 0 ? (
+                  availableLanguages.map(language => (
+                    <DropdownMenuCheckboxItem
+                      key={language}
+                      checked={filters.language.includes(language)}
+                      onCheckedChange={(checked) => handleLanguageFilter(language, checked)}
+                    >
+                      {language}
+                    </DropdownMenuCheckboxItem>
+                  ))
+                ) : (
+                  <div className="px-2 py-1.5 text-sm text-muted-foreground">
+                    No languages available
+                  </div>
+                )}
+                {filters.language.length > 0 && (
+                  <>
+                    <DropdownMenuSeparator />
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="w-full justify-start text-muted-foreground"
+                      onClick={clearFilters}
+                    >
+                      Clear all filters
+                    </Button>
+                  </>
+                )}
+              </DropdownMenuContent>
+            </DropdownMenu>
 
-            {/* Refresh */}
-            <button
+            {/* Refresh Button */}
+            <Button
               onClick={() => mutate()}
-              className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground hover:bg-primary/90 rounded-lg transition-colors"
               disabled={isLoading}
+              variant="default"
+              className="flex items-center gap-2"
             >
               <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
               Refresh
-            </button>
+            </Button>
           </div>
 
-          {/* Filter Options */}
-          {showFilters && (
-            <motion.div
-              className="mt-6 p-4 bg-muted rounded-lg"
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
-            >
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                {/* Featured Toggle */}
-                <label className="flex items-center gap-2 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={filters.featured}
-                    onChange={(e) => handleFilterChange('featured', e.target.checked)}
-                    className="rounded border-border"
-                  />
-                  <span className="text-sm">Featured Only</span>
-                </label>
-
-                {/* Status Filter */}
-                <select
-                  multiple
-                  value={filters.status || []}
-                  onChange={(e) => handleFilterChange('status', Array.from(e.target.selectedOptions, option => option.value))}
-                  className="text-sm bg-background border border-border rounded p-2"
+          {/* Results info */}
+          <div className="text-center text-sm text-muted-foreground mt-4">
+            {/* Showing {filteredProjects.length} of {projects?.length || 0} projects */}
+            {(filters.search || filters.language.length > 0) && (
+              <span className="ml-2">
+                <button
+                  onClick={clearFilters}
+                  className="text-muted-foreground hover:text-primary/80 transition-colors"
                 >
-                  <option value="">All Statuses</option>
-                  {filterOptions.statuses.map(status => (
-                    <option key={status} value={status}>{status}</option>
-                  ))}
-                </select>
+                  Clear filters
+                </button>
+              </span>
+            )}
+          </div>
 
-                {/* Category Filter */}
-                <select
-                  multiple
-                  value={filters.category || []}
-                  onChange={(e) => handleFilterChange('category', Array.from(e.target.selectedOptions, option => option.value))}
-                  className="text-sm bg-background border border-border rounded p-2"
-                >
-                  <option value="">All Categories</option>
-                  {filterOptions.categories.map(category => (
-                    <option key={category} value={category}>{category}</option>
-                  ))}
-                </select>
 
-                {/* Language Filter */}
-                <select
-                  multiple
-                  value={filters.language || []}
-                  onChange={(e) => handleFilterChange('language', Array.from(e.target.selectedOptions, option => option.value))}
-                  className="text-sm bg-background border border-border rounded p-2"
-                >
-                  <option value="">All Languages</option>
-                  {filterOptions.languages.map(language => (
-                    <option key={language} value={language}>{language}</option>
-                  ))}
-                </select>
-              </div>
-
-              <button
-                onClick={clearFilters}
-                className="mt-4 text-sm text-muted-foreground hover:text-foreground transition-colors"
-              >
-                Clear all filters
-              </button>
-            </motion.div>
-          )}
         </motion.div>
 
         {/* Content */}
@@ -319,15 +296,15 @@ export function ProjectsSection() {
               transition={{ duration: 0.6 }}
               viewport={{ once: true }}
             >
-              <a
-                href={`https://github.com/${githubService}`}
+              <Link
+                href="https://github.com/RMV-Coder"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
               >
                 <Github className="w-5 h-5" />
                 View all projects on GitHub
-              </a>
+              </Link>
             </motion.div>
           </>
         )}

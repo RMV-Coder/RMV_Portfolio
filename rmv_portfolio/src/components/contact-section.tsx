@@ -197,15 +197,19 @@ export function ContactSection() {
                 className={`p-4 rounded-lg mb-6 flex items-center space-x-3 ${
                   formState.status === 'success'
                     ? 'bg-green-50 border border-green-200 text-green-800 dark:bg-green-900/20 dark:border-green-800 dark:text-green-300'
+                    : formState.status === 'loading'
+                    ? 'bg-blue-50 border border-blue-200 text-blue-800 dark:bg-blue-900/20 dark:border-blue-800 dark:text-blue-300'
                     : 'bg-red-50 border border-red-200 text-red-800 dark:bg-red-900/20 dark:border-red-800 dark:text-red-300'
                 }`}
               >
                 {formState.status === 'success' ? (
                   <FiCheck className="w-5 h-5 flex-shrink-0" />
+                ) : formState.status === 'loading' ? (
+                  <FiLoader className="w-5 h-5 flex-shrink-0 animate-spin" />
                 ) : (
                   <FiAlertCircle className="w-5 h-5 flex-shrink-0" />
                 )}
-                <p className="text-sm">{formState.message}</p>
+                <p className="text-sm">{formState.message || (formState.status === 'loading' ? 'Sending your message...' : '')}</p>
               </motion.div>
             )}
 

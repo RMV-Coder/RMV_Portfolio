@@ -137,7 +137,7 @@ Sent from portfolio contact form at ${new Date().toLocaleString()}
     // Optional: Send auto-reply to the sender
     if (process.env.SEND_AUTO_REPLY === 'true') {
       await transporter.sendMail({
-        from: `"Your Name" <${process.env.SMTP_USER}>`,
+        from: `"Raymond Valdepeñas" <${process.env.SMTP_USER}>`,
         to: validatedData.email,
         subject: 'Thank you for your message!',
         text: `
@@ -146,10 +146,14 @@ Hi ${validatedData.name},
 Thank you for reaching out! I've received your message and will get back to you as soon as possible.
 
 Best regards,
-Your Name
+Raymond Valdepeñas
+Full Stack Developer
+
+Portfolio: https://raymondvaldepenas-dev.vercel.app
+GitHub: https://github.com/RMV-Coder
 
 ---
-This is an automated response.
+This is an automated response from my portfolio contact form.
         `,
         html: `
           <!DOCTYPE html>
@@ -162,7 +166,13 @@ This is an automated response.
                 .container { max-width: 600px; margin: 0 auto; padding: 20px; }
                 .header { background: #007bff; color: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; }
                 .content { background: #ffffff; padding: 20px; border: 1px solid #e9ecef; border-radius: 8px; }
-                .footer { margin-top: 20px; text-align: center; color: #6c757d; font-size: 14px; }
+                .signature { margin-top: 30px; padding-top: 20px; border-top: 1px solid #e9ecef; }
+                .signature-name { font-weight: bold; color: #007bff; margin-bottom: 5px; }
+                .signature-title { color: #6c757d; margin-bottom: 10px; font-style: italic; }
+                .signature-links { margin-top: 10px; }
+                .signature-links a { color: #007bff; text-decoration: none; margin-right: 15px; }
+                .signature-links a:hover { text-decoration: underline; }
+                .automated-note { margin-top: 15px; padding-top: 15px; border-top: 1px solid #f1f1f1; color: #6c757d; font-size: 12px; font-style: italic; }
               </style>
             </head>
             <body>
@@ -176,11 +186,17 @@ This is an automated response.
                   
                   <p>Thank you for reaching out! I've received your message and will get back to you as soon as possible.</p>
                   
-                  <p>Best regards,<br>Your Name</p>
-                </div>
-                
-                <div class="footer">
-                  <p>This is an automated response.</p>
+                  <div class="signature">
+                    <div class="signature-name">Raymond Valdepeñas</div>
+                    <div class="signature-title">Full Stack Developer</div>
+                    <div class="signature-links">
+                      <a href="https://raymondvaldepenas-dev.vercel.app" target="_blank">Portfolio</a>
+                      <a href="https://github.com/RMV-Coder" target="_blank">GitHub</a>
+                    </div>
+                    <div class="automated-note">
+                      This is an automated response from my portfolio contact form.
+                    </div>
+                  </div>
                 </div>
               </div>
             </body>
