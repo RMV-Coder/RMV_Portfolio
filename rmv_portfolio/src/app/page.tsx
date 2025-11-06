@@ -77,6 +77,7 @@ export default function Home() {
               typingSpeed={120}
               deletingSpeed={80}
               pauseDuration={1500}
+              startFullyTyped={true}
             />
           </motion.div>
           

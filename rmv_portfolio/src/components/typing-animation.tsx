@@ -10,6 +10,7 @@ interface TypingAnimationProps {
   typingSpeed?: number
   deletingSpeed?: number
   pauseDuration?: number
+  startFullyTyped?: boolean // New prop to start with first text fully typed
 }
 
 export function TypingAnimation({ 
@@ -18,12 +19,13 @@ export function TypingAnimation({
   delay = 0,
   typingSpeed = 50, // milliseconds per character (faster than before)
   deletingSpeed = 30, // milliseconds per character when deleting
-  pauseDuration = 1000 // pause between complete words
+  pauseDuration = 1000, // pause between complete words
+  startFullyTyped = false // Start with first text already displayed
 }: TypingAnimationProps) {
-  const [displayedText, setDisplayedText] = React.useState("")
+  const [displayedText, setDisplayedText] = React.useState(startFullyTyped && texts.length > 0 ? texts[0] : "")
   const [currentTextIndex, setCurrentTextIndex] = React.useState(0)
-  const [isDeleting, setIsDeleting] = React.useState(false)
-  const [isPaused, setIsPaused] = React.useState(false)
+  const [isDeleting, setIsDeleting] = React.useState(startFullyTyped)
+  const [isPaused, setIsPaused] = React.useState(startFullyTyped)
 
   React.useEffect(() => {
     if (texts.length === 0) return
