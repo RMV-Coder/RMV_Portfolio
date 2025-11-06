@@ -7,6 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { FiMail, FiPhone, FiMapPin, FiSend, FiLoader, FiCheck, FiAlertCircle } from "react-icons/fi"
 import { FaGithub, FaLinkedin, FaTwitter } from "react-icons/fa"
 import { contactFormSchema, type ContactFormData } from "@/lib/validations"
+import { trackContactFormSubmit } from "@/lib/analytics"
 
 interface FormState {
   status: 'idle' | 'loading' | 'success' | 'error'
@@ -43,6 +44,9 @@ export function ContactSection() {
       const result = await response.json()
 
       if (response.ok) {
+        // Track successful form submission
+        trackContactFormSubmit()
+        
         setFormState({
           status: 'success',
           message: 'Message sent successfully! I will get back to you soon.'

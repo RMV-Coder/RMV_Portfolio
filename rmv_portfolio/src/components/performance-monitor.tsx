@@ -38,16 +38,16 @@ export function PerformanceMonitor() {
       // Web Vitals
       const measureWebVitals = () => {
         if ('web-vital' in window) {
-          // @ts-expect-error - web-vital might not be available
-          window['web-vital'].getCLS(console.log)
-          // @ts-expect-error - web-vital might not be available
-          window['web-vital'].getFID(console.log)
-          // @ts-expect-error - web-vital might not be available
-          window['web-vital'].getFCP(console.log)
-          // @ts-expect-error - web-vital might not be available
-          window['web-vital'].getLCP(console.log)
-          // @ts-expect-error - web-vital might not be available
-          window['web-vital'].getTTFB(console.log)
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          (window as any)['web-vital'].getCLS(console.log)
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          (window as any)['web-vital'].getFID(console.log)
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          (window as any)['web-vital'].getFCP(console.log)
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          (window as any)['web-vital'].getLCP(console.log)
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          (window as any)['web-vital'].getTTFB(console.log)
         }
       }
 

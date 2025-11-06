@@ -3,6 +3,7 @@ import { //Geist, Geist_Mono,
   Montserrat } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
+import { GoogleAnalytics } from '@next/third-parties/google';
 import { structuredData, websiteStructuredData, professionalServiceStructuredData } from "@/lib/structured-data";
 
 const montserrat = Montserrat({
@@ -221,6 +222,7 @@ export default function RootLayout({
       <body
         className={`${montserrat.variable} antialiased`}
       >
+        <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID || ''} />
         <ThemeProvider
           attribute="class"
           defaultTheme="dark"

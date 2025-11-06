@@ -4,6 +4,7 @@ import * as React from "react"
 import Image from "next/image"
 import { motion } from "framer-motion"
 import { Download, MapPin, Calendar, Coffee, Code, Gamepad2 } from "lucide-react"
+import { trackResumeDownload } from "@/lib/analytics"
 
 export function AboutSection() {
   return (
@@ -188,8 +189,9 @@ export function AboutSection() {
                 whileTap={{ scale: 0.95 }}
                 onClick={() => {
                   try {
-                    // Track resume download (you can add analytics here)
-                    console.log('Resume downloaded')
+                    // Track resume download with analytics
+                    trackResumeDownload()
+                    console.log('Resume downloaded - tracked')
                     
                     // Create a proper download link
                     const link = document.createElement('a')
