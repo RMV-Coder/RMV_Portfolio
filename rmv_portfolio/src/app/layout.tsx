@@ -3,6 +3,7 @@ import { //Geist, Geist_Mono,
   Montserrat } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
+import { Footer } from "@/components/footer";
 import { GoogleAnalytics } from '@next/third-parties/google';
 import { structuredData, websiteStructuredData, professionalServiceStructuredData } from "@/lib/structured-data";
 
@@ -230,6 +231,7 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           {children}
+          <Footer />
         </ThemeProvider>
       </body>
     </html>
