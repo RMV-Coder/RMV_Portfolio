@@ -1,7 +1,6 @@
 "use client"
 
 import * as React from "react"
-import Link from "next/link"
 import { motion } from "framer-motion"
 import useSWR from "swr"
 import { Search, Github, Loader2, AlertCircle, RefreshCw, Filter } from "lucide-react"
@@ -296,7 +295,7 @@ export function ProjectsSection() {
               transition={{ duration: 0.6 }}
               viewport={{ once: true }}
             >
-              <Link
+              <a
                 href="https://github.com/RMV-Coder"
                 target="_blank"
                 rel="noopener noreferrer"
@@ -304,7 +303,7 @@ export function ProjectsSection() {
               >
                 <Github className="w-5 h-5" />
                 View all projects on GitHub
-              </Link>
+              </a>
             </motion.div>
           </>
         )}
