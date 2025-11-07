@@ -141,7 +141,7 @@ export function ResearchSection() {
             Research Publications
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Contributing to academic research in network security, intrusion detection, and cybersecurity
+            Contributing to academic research in Artificial Intelligence of Things (AIoT), edge computing security, and intelligent surveillance systems
           </p>
         </motion.div>
 
