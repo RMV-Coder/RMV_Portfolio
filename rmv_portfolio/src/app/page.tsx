@@ -34,6 +34,11 @@ const ContactSection = dynamic(() => import("@/components/contact-section").then
   ssr: true
 })
 
+const ResearchSection = dynamic(() => import("@/components/research-section").then(mod => ({ default: mod.ResearchSection })), {
+  loading: () => <div className="py-20 flex items-center justify-center"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div></div>,
+  ssr: true
+})
+
 export default function Home() {
   return (
     <div className="min-h-screen">
@@ -125,6 +130,9 @@ export default function Home() {
 
       {/* Skills Section */}
       <SkillsSection />
+
+      {/* Research Section */}
+      <ResearchSection />
 
       {/* Projects Section */}
       <ProjectsSection />
