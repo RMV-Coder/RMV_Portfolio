@@ -88,6 +88,17 @@ export const metadata: Metadata = {
   alternates: {
     canonical: "https://raymondvaldepenas-dev.vercel.app",
   },
+  icons: {
+    icon: [
+      { url: '/favicon.ico', sizes: 'any' },
+      { url: '/favicon.svg', type: 'image/svg+xml' },
+    ],
+    apple: '/apple-touch-icon.png',
+  },
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: '#ffffff' },
+    { media: '(prefers-color-scheme: dark)', color: '#1e293b' },
+  ],
 };
 
 export default function RootLayout({

@@ -5,8 +5,11 @@ import { motion } from "framer-motion"
 
 export function AnimatedBackground() {
   const [dimensions, setDimensions] = React.useState({ width: 1200, height: 800 })
+  const [isClient, setIsClient] = React.useState(false)
 
   React.useEffect(() => {
+    setIsClient(true)
+    
     const updateDimensions = () => {
       setDimensions({
         width: window.innerWidth,
@@ -22,8 +25,21 @@ export function AnimatedBackground() {
     return () => window.removeEventListener('resize', updateDimensions)
   }, [])
 
-  // Generate random positions based on current dimensions
+  // Generate consistent particles using seeded random values
   const particles = React.useMemo(() => {
+    if (!isClient) {
+      // Return consistent server-side data
+      return Array.from({ length: 20 }, (_, i) => ({
+        id: i,
+        initialX: (i * 123.456) % dimensions.width,
+        initialY: (i * 789.123) % dimensions.height,
+        targetX: ((i + 10) * 234.567) % dimensions.width,
+        targetY: ((i + 10) * 890.234) % dimensions.height,
+        duration: 20 + (i % 10)
+      }))
+    }
+    
+    // Client-side can use random values after hydration
     return Array.from({ length: 20 }, (_, i) => ({
       id: i,
       initialX: Math.random() * dimensions.width,
@@ -32,7 +48,7 @@ export function AnimatedBackground() {
       targetY: Math.random() * dimensions.height,
       duration: Math.random() * 10 + 20
     }))
-  }, [dimensions])
+  }, [dimensions, isClient])
 
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none">
