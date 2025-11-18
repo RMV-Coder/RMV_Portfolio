@@ -134,3 +134,5 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+rmv_portfolio/VERCEL_ENV_SETUP.md
+rmv_portfolio/GMAIL_FIX.md
