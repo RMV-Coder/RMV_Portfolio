@@ -94,14 +94,14 @@ const publications: Publication[] = [
   {
     title: "My.BoardHub: Development of a Single-Board Computer-Based Security System Using Artificial Intelligence of Things for Boarding Houses",
     authors: [
-      { name: "Raymond M. Valdepeñas", orcid: "http://orcid.org/0009-0008-8680-3694", isMainAuthor: true }, // Add your ORCID manually
-      { name: "Marie Glo C. Generalao", orcid: "http://orcid.org/0009-0001-3964-4570" }, // Add ORCID manually if available
-      { name: "Selena B. Suario", orcid: "http://orcid.org/0009-0002-8525-5354" }, // Add ORCID manually if available
-      { name: "Apple Rose B. Alce", orcid: "http://orcid.org/0000-0001-6672-8772" }, // Add ORCID manually if available
-      { name: "Paul Rodolf P. Castor", orcid: "http://orcid.org/0000-0001-5609-5334" }, // Add ORCID manually if available
-      { name: "Jomari Francis B. Villanueva", orcid: "http://orcid.org/0009-0000-6515-2169" }, // Add ORCID manually if available
-      { name: "Leah A. Alindayo", orcid: "http://orcid.org/0009-0007-5990-971X" }, // Add ORCID manually if available
-      { name: "Ernesto E. Empig", orcid: "http://orcid.org/0000-0001-8044-3124" } // Add ORCID manually if available
+      { name: "Raymond M. Valdepeñas", orcid: "0009-0008-8680-3694", isMainAuthor: true }, // Add your ORCID manually
+      { name: "Marie Glo C. Generalao", orcid: "0009-0001-3964-4570" }, // Add ORCID manually if available
+      { name: "Selena B. Suario", orcid: "0009-0002-8525-5354" }, // Add ORCID manually if available
+      { name: "Apple Rose B. Alce", orcid: "0000-0001-6672-8772" }, // Add ORCID manually if available
+      { name: "Paul Rodolf P. Castor", orcid: "0000-0001-5609-5334" }, // Add ORCID manually if available
+      { name: "Jomari Francis B. Villanueva", orcid: "0009-0000-6515-2169" }, // Add ORCID manually if available
+      { name: "Leah A. Alindayo", orcid: "0009-0007-5990-971X" }, // Add ORCID manually if available
+      { name: "Ernesto E. Empig", orcid: "0000-0001-8044-3124" } // Add ORCID manually if available
     ],
     abstract: "Boarding houses near universities in the Philippines face growing security challenges inadequately met by traditional methods. This study details the development, short implementation, and technical performance evaluation of my.BoardHub, a prototype Artificial Intelligence of Things (AIoT) system designed to enhance safety through facial recognition. The system utilizes a Raspberry Pi 5 edge device, Multi-Task Cascaded Convolutional Networks (MTCNN) for real-time face detection, and a fine-tuned Inception-ResNet-V1 model for facial recognition. Development followed a layered architecture and Rapid Application Development (RAD) methodology. During a pilot deployment, technical performance was evaluated via system logs, hardware stress tests, network latency measurements, and AI model benchmarks. The system achieved a high technical accuracy (90.88% face detection accuracy; 94.28% facial recognition F1-score) and a near real-time processing with an average of 7.6 FPS at 480p. Network performance met responsiveness targets. Ethical considerations were addressed through informed consent, technical data anonymization, and implemented security measures, although moderate user privacy concerns persisted, highlighting the need for clearer data-handling communication and governance. my.BoardHub demonstrates the technical feasibility of deploying edge AIoT for enhanced boarding house security. Future work should prioritize edge optimization, adaptive algorithms, privacy-preserving techniques, and longer-term technical evaluations.",
     doi: "10.1007/978-3-032-06634-3_6",
