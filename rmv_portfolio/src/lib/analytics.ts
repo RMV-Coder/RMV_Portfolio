@@ -1,64 +1,50 @@
 // Google Analytics event tracking utilities
-// Uses the gtag function injected by @next/third-parties/google
+// Uses sendGAEvent from @next/third-parties/google
 
-// Declare gtag function
-declare global {
-  interface Window {
-    gtag: (...args: unknown[]) => void;
-  }
-}
+import { sendGAEvent } from '@next/third-parties/google'
 
-// Check if gtag is available
-const isGtagAvailable = () => {
-  return typeof window !== 'undefined' && 'gtag' in window;
-}
-
-// Track custom events
-export const trackEvent = (eventName: string, parameters?: Record<string, unknown>) => {
-  if (isGtagAvailable()) {
-    window.gtag('event', eventName, parameters);
-  }
-}
-
-// Specific tracking functions for your portfolio
+// Track resume download
 export const trackResumeDownload = () => {
-  trackEvent('file_download', {
+  sendGAEvent('event', 'file_download', {
     file_name: 'Raymond_Valdepenas_Resume.pdf',
     file_extension: 'pdf',
     event_category: 'engagement',
     event_label: 'resume_download'
-  });
+  })
 }
 
+// Track contact form submission
 export const trackContactFormSubmit = () => {
-  trackEvent('form_submit', {
+  sendGAEvent('event', 'form_submit', {
     form_id: 'contact_form',
     event_category: 'engagement',
     event_label: 'contact_form_submission'
-  });
+  })
 }
 
+// Track project clicks
 export const trackProjectClick = (projectName: string) => {
-  trackEvent('click', {
+  sendGAEvent('event', 'click', {
     event_category: 'project',
     event_label: projectName,
     value: 1
-  });
+  })
 }
 
+// Track social media clicks
 export const trackSocialClick = (platform: string) => {
-  trackEvent('click', {
+  sendGAEvent('event', 'click', {
     event_category: 'social',
     event_label: platform,
     value: 1
-  });
+  })
 }
 
-// Optional: Track page sections viewed (for measuring engagement)
+// Track page sections viewed (for measuring engagement)
 export const trackSectionView = (sectionName: string) => {
-  trackEvent('scroll', {
+  sendGAEvent('event', 'scroll', {
     event_category: 'engagement',
     event_label: `section_${sectionName}`,
     value: 1
-  });
+  })
 }
