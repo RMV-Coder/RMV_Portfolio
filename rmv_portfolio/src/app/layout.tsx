@@ -4,6 +4,8 @@ import { //Geist, Geist_Mono,
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Footer } from "@/components/footer";
+import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from '@vercel/speed-insights/next';
 import { GoogleAnalytics } from '@next/third-parties/google';
 import { structuredData, websiteStructuredData, professionalServiceStructuredData } from "@/lib/structured-data";
 
@@ -241,6 +243,8 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           {children}
+          <Analytics />
+          <SpeedInsights />
           <Footer />
         </ThemeProvider>
       </body>
