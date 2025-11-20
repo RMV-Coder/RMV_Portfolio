@@ -111,7 +111,6 @@ export default function RootLayout({
       <head>
         {/* Security headers for screenshot protection */}
         <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
-        <meta httpEquiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'self' https://api.github.com;" />
         <meta name="referrer" content="strict-origin-when-cross-origin" />
         
         {/* Prevent right-click and screenshot attempts */}

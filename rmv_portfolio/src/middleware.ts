@@ -14,11 +14,11 @@ export function middleware(request: NextRequest) {
   // Content Security Policy with strict rules
   const csp = [
     "default-src 'self'",
-    "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
+    "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com",
     "style-src 'self' 'unsafe-inline' fonts.googleapis.com",
     "font-src 'self' fonts.gstatic.com fonts.googleapis.com",
-    "img-src 'self' data: blob:",
-    "connect-src 'self' https://api.github.com",
+    "img-src 'self' data: blob: https://www.googletagmanager.com",
+    "connect-src 'self' https://api.github.com https://www.google-analytics.com https://analytics.google.com https://www.googletagmanager.com",
     "frame-src 'none'",
     "object-src 'none'",
     "base-uri 'self'",
