@@ -3,6 +3,7 @@
 import * as React from "react"
 import { motion } from "framer-motion"
 import { Github, Linkedin, Mail, Twitter } from "lucide-react"
+import { trackSocialClick } from "@/lib/analytics"
 
 interface SocialLink {
   name: string
@@ -58,6 +59,7 @@ export function SocialLinks() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 2 + index * 0.1 }}
+          onClick={() => trackSocialClick(link.name)}
         >
           <span className="sr-only">{link.name}</span>
           {link.icon}

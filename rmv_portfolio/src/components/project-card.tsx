@@ -14,6 +14,7 @@ import {
 } from "lucide-react"
 import type { EnhancedProject } from "@/app/interface/github"
 import { formatDate, getStatusColor, getCategoryColor } from "@/lib/github"
+import { trackProjectClick } from "@/lib/analytics"
 
 interface ProjectCardProps {
   project: EnhancedProject
@@ -175,6 +176,7 @@ export function ProjectCard({ project, index, featured = false }: ProjectCardPro
             className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
+            onClick={() => trackProjectClick(project.name)}
           >
             <Github className="w-4 h-4" />
             <span className="text-sm font-medium">Code</span>
@@ -188,6 +190,7 @@ export function ProjectCard({ project, index, featured = false }: ProjectCardPro
               className="flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
+              onClick={() => trackProjectClick(project.name)}
             >
               <ExternalLink className="w-4 h-4" />
               <span className="text-sm font-medium">Live Demo</span>

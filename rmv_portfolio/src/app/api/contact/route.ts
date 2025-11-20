@@ -44,19 +44,42 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const validatedData = contactFormSchema.parse(body)
 
-    // Create nodemailer transporter
+    // Check if required environment variables are set
+    if (!process.env.SMTP_USER || !process.env.SMTP_PASS) {
+      console.error('Missing SMTP credentials:', {
+        hasUser: !!process.env.SMTP_USER,
+        hasPass: !!process.env.SMTP_PASS,
+      })
+      return NextResponse.json(
+        { error: 'Email service not configured. Please contact the administrator.' },
+        { status: 503 }
+      )
+    }
+
+    // Create nodemailer transporter with enhanced configuration
     const transporter = nodemailer.createTransport({
       host: process.env.SMTP_HOST || 'smtp.gmail.com',
       port: parseInt(process.env.SMTP_PORT || '587'),
       secure: process.env.SMTP_SECURE === 'true', // true for 465, false for other ports
       auth: {
         user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASS,
+        pass: process.env.SMTP_PASS.replace(/["\s]/g, ''), // Remove quotes and spaces
       },
+      // Add timeout settings for serverless
+      connectionTimeout: 10000, // 10 seconds
+      greetingTimeout: 10000,
+      socketTimeout: 10000,
+      // Add pool and rate limiting for better reliability
+      pool: true,
+      maxConnections: 1,
+      maxMessages: 3,
+      // Add logger for debugging (remove in production if needed)
+      logger: process.env.NODE_ENV === 'development',
+      debug: process.env.NODE_ENV === 'development',
     })
 
-    // Verify transporter configuration
-    await transporter.verify()
+    // Skip verification in production to avoid timeout - verify happens on send anyway
+    // await transporter.verify()
 
     // Email content
     const htmlContent = `
@@ -213,6 +236,15 @@ This is an automated response from my portfolio contact form.
   } catch (error) {
     console.error('Contact form error:', error)
     
+    // Log detailed error information for debugging
+    if (error instanceof Error) {
+      console.error('Error details:', {
+        name: error.name,
+        message: error.message,
+        stack: error.stack,
+      })
+    }
+    
     // Handle validation errors
     if (error instanceof Error && error.name === 'ZodError') {
       return NextResponse.json(
@@ -221,12 +253,25 @@ This is an automated response from my portfolio contact form.
       )
     }
     
-    // Handle nodemailer errors
-    if (error instanceof Error && error.message.includes('SMTP')) {
-      return NextResponse.json(
-        { error: 'Email service temporarily unavailable. Please try again later.' },
-        { status: 503 }
-      )
+    // Handle nodemailer/SMTP errors
+    if (error instanceof Error) {
+      // Authentication errors
+      if (error.message.includes('Invalid login') || error.message.includes('authentication')) {
+        console.error('SMTP Authentication failed - check credentials')
+        return NextResponse.json(
+          { error: 'Email service authentication failed. Please contact the administrator.' },
+          { status: 503 }
+        )
+      }
+      
+      // Connection errors
+      if (error.message.includes('SMTP') || error.message.includes('connect') || error.message.includes('timeout')) {
+        console.error('SMTP Connection failed:', error.message)
+        return NextResponse.json(
+          { error: 'Email service temporarily unavailable. Please try again later.' },
+          { status: 503 }
+        )
+      }
     }
     
     return NextResponse.json(
