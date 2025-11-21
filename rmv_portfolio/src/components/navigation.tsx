@@ -4,6 +4,7 @@ import * as React from "react"
 import Link from "next/link"
 import { Menu, X } from "lucide-react"
 import { ThemeToggle } from "@/components/theme-toggle"
+import { trackResumeDownload } from "@/lib/analytics"
 
 interface NavItem {
   name: string
@@ -104,6 +105,7 @@ export function Navigation() {
               className="inline-flex items-center px-4 py-2 border border-primary text-primary rounded-md hover:bg-primary hover:text-primary-foreground transition-colors text-sm font-medium"
               target="_blank"
               rel="noopener noreferrer"
+              onClick={() => trackResumeDownload()}
             >
               Download CV
             </Link>
@@ -146,7 +148,10 @@ export function Navigation() {
                 className="block px-3 py-2 rounded-md text-base font-medium text-primary hover:bg-accent transition-colors"
                 target="_blank"
                 rel="noopener noreferrer"
-                onClick={() => setIsOpen(false)}
+                onClick={() => {
+                  trackResumeDownload()
+                  setIsOpen(false)
+                }}
               >
                 Download CV
               </Link>

@@ -4,13 +4,27 @@
 import { sendGAEvent } from '@next/third-parties/google'
 
 // Track resume download
-export const trackResumeDownload = () => {
+export const trackResumeDownload = async () => {
+  // Track in Google Analytics
   sendGAEvent('event', 'file_download', {
     file_name: 'Raymond_Valdepenas_Resume.pdf',
     file_extension: 'pdf',
     event_category: 'engagement',
     event_label: 'resume_download'
   })
+
+  // Send notification email with user details
+  try {
+    await fetch('/api/track-download', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+  } catch (error) {
+    // Fail silently - don't block download
+    console.error('Failed to track download:', error)
+  }
 }
 
 // Track contact form submission

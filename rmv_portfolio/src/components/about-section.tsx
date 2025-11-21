@@ -187,11 +187,10 @@ export function AboutSection() {
                 className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-6 py-3 rounded-lg font-medium hover:bg-primary/90 transition-colors"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                onClick={() => {
+                onClick={async () => {
                   try {
-                    // Track resume download with analytics
-                    trackResumeDownload()
-                    console.log('Resume downloaded - tracked')
+                    // Track resume download with analytics (async now)
+                    await trackResumeDownload()
                     
                     // Create a proper download link
                     const link = document.createElement('a')
