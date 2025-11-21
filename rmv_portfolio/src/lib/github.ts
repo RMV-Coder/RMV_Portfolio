@@ -71,6 +71,8 @@ const PROJECT_METADATA: Record<string, ProjectMetadata> = {
 class GitHubService {
   private cache: Map<string, { data: unknown; timestamp: number }> = new Map()
   private readonly CACHE_DURATION = 5 * 60 * 1000 // 5 minutes
+  private readonly MAX_RETRIES = 3
+  private readonly INITIAL_RETRY_DELAY = 1000 // 1 second
 
   private getCachedData<T>(key: string): T | null {
     const cached = this.cache.get(key)
@@ -83,6 +85,36 @@ class GitHubService {
 
   private setCachedData(key: string, data: unknown): void {
     this.cache.set(key, { data, timestamp: Date.now() })
+  }
+
+  private async sleep(ms: number): Promise<void> {
+    return new Promise(resolve => setTimeout(resolve, ms))
+  }
+
+  private async retryWithBackoff<T>(
+    fn: () => Promise<T>,
+    retryCount = 0
+  ): Promise<T> {
+    try {
+      return await fn()
+    } catch (error) {
+      // Check if it's a rate limit error
+      const isRateLimit = error && 
+        typeof error === 'object' && 
+        'response' in error &&
+        (error as { response: { status: number } }).response.status === 403
+
+      if (isRateLimit && retryCount < this.MAX_RETRIES) {
+        // Exponential backoff: 1s, 2s, 4s
+        const delay = this.INITIAL_RETRY_DELAY * Math.pow(2, retryCount)
+        console.warn(`[GitHub API] Rate limit hit, retrying in ${delay}ms (attempt ${retryCount + 1}/${this.MAX_RETRIES})`)
+        await this.sleep(delay)
+        return this.retryWithBackoff(fn, retryCount + 1)
+      }
+
+      // If not rate limit or max retries reached, throw error
+      throw error
+    }
   }
 
   private handleApiError(error: unknown): GitHubApiError {
@@ -117,12 +149,14 @@ class GitHubService {
     if (cached) return cached
 
     try {
-      const response = await githubApi.get(`/users/${GITHUB_USERNAME}/repos`, {
-        params: {
-          per_page: 100,
-          sort: 'updated',
-          direction: 'desc'
-        }
+      const response = await this.retryWithBackoff(async () => {
+        return await githubApi.get(`/users/${GITHUB_USERNAME}/repos`, {
+          params: {
+            per_page: 100,
+            sort: 'updated',
+            direction: 'desc'
+          }
+        })
       })
 
       const repositories: GitHubRepository[] = response.data
@@ -146,7 +180,10 @@ class GitHubService {
     if (cached) return cached
 
     try {
-      const response = await githubApi.get(`/repos/${GITHUB_USERNAME}/${repoName}/languages`)
+      const response = await this.retryWithBackoff(async () => {
+        return await githubApi.get(`/repos/${GITHUB_USERNAME}/${repoName}/languages`)
+      })
+      
       const languages: GitHubLanguages = response.data
       
       this.setCachedData(cacheKey, languages)
@@ -212,7 +249,9 @@ class GitHubService {
 
   async getRateLimit() {
     try {
-      const response = await githubApi.get('/rate_limit')
+      const response = await this.retryWithBackoff(async () => {
+        return await githubApi.get('/rate_limit')
+      })
       return response.data.rate
     } catch (error) {
       throw this.handleApiError(error)
