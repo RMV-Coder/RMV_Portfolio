@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { motion } from "framer-motion"
+import { LazyMotion, domAnimation, m } from "framer-motion"
 
 interface TypingAnimationProps {
   texts: string[]
@@ -16,10 +16,10 @@ interface TypingAnimationProps {
 export function TypingAnimation({ 
   texts, 
   className = "", 
-  delay = 0,
+  delay = 1,
   typingSpeed = 50, // milliseconds per character (faster than before)
-  deletingSpeed = 30, // milliseconds per character when deleting
-  pauseDuration = 1000, // pause between complete words
+  deletingSpeed = 100, // milliseconds per character when deleting
+  pauseDuration = 5000, // pause between complete words
   startFullyTyped = false // Start with first text already displayed
 }: TypingAnimationProps) {
   const [displayedText, setDisplayedText] = React.useState(startFullyTyped && texts.length > 0 ? texts[0] : "")
@@ -64,25 +64,28 @@ export function TypingAnimation({
   }, [displayedText, currentTextIndex, isDeleting, isPaused, texts, delay, typingSpeed, deletingSpeed, pauseDuration])
 
   return (
-    <motion.span
-      className={className}
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.5, delay: delay / 1000 }}
-    >
-      {displayedText}
-      <motion.span
-        className="opacity-100 font-normal"
-        animate={{ opacity: [1, 0, 1] }}
-        transition={{ 
-          duration: 0.8, 
-          repeat: Infinity,
-          ease: "easeInOut"
-        }}
+    <LazyMotion features={domAnimation}>
+      <m.span
+        className={className}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5, delay: delay / 1000 }}
       >
-        |
-      </motion.span>
-    </motion.span>
+        {displayedText}
+        {!isPaused ? <span className={`${className} opacity-100 font-normal`}>|</span> : <m.span
+          className={`${className} opacity-100 font-normal`}
+          animate={{ opacity: [1, 0, 1] }}
+          transition={{ 
+            duration: 1.2, 
+            delay: 0.5,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }}
+        >
+          |
+        </m.span>}
+      </m.span>
+    </LazyMotion>
   )
 }
 

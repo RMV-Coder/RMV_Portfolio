@@ -78,10 +78,10 @@ export default function Home() {
                 "AUTOMATION SPECIALIST"
               ]}
               className="scroll-m-20 text-6xl md:text-8xl font-extrabold tracking-tight text-balance bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent"
-              delay={1000}
-              typingSpeed={120}
-              deletingSpeed={80}
-              pauseDuration={1500}
+              delay={100}
+              typingSpeed={100}
+              deletingSpeed={40}
+              pauseDuration={4000}
               startFullyTyped={true}
             />
           </motion.div>
