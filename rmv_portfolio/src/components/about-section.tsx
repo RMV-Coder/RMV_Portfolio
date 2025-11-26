@@ -3,8 +3,9 @@
 import * as React from "react"
 import Image from "next/image"
 import { motion } from "framer-motion"
-import { Download, MapPin, Calendar, Coffee, Code, Gamepad2 } from "lucide-react"
+import { Download, MapPin, Coffee, Code, Gamepad2 } from "lucide-react"
 import { trackResumeDownload } from "@/lib/analytics"
+import { WorkAvailability } from "@/components/work-availability"
 
 export function AboutSection() {
   return (
@@ -145,10 +146,9 @@ export function AboutSection() {
                 <MapPin className="w-5 h-5 text-primary" />
                 <span className="text-muted-foreground">Philippines</span>
               </div>
-              <div className="flex items-center gap-3">
-                <Calendar className="w-5 h-5 text-primary" />
-                <span className="text-muted-foreground">Available for work</span>
-              </div>
+              
+              {/* Work Availability Status - Change props as needed */}
+              <WorkAvailability available={false} status={7} />
             </div>
 
             {/* Interests */}
