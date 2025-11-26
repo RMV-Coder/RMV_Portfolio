@@ -4,10 +4,16 @@ import * as React from "react"
 import Image from "next/image"
 import { motion } from "framer-motion"
 import { Download, MapPin, Coffee, Code, Gamepad2 } from "lucide-react"
-import { trackResumeDownload } from "@/lib/analytics"
 import { WorkAvailability } from "@/components/work-availability"
 
+
+import { ResumeUnavailableModal } from "@/components/resume-unavailable-modal"
+import { RESUME_AVAILABLE } from "@/constants/resume"
+import { trackResumeDownload } from "@/lib/analytics"
+
 export function AboutSection() {
+  const [showResumeModal, setShowResumeModal] = React.useState(false)
+
   return (
     <section id="about" className="py-20 bg-muted/30">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -184,36 +190,37 @@ export function AboutSection() {
               viewport={{ once: true }}
             >
               <motion.button
-                className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-6 py-3 rounded-lg font-medium hover:bg-primary/90 transition-colors"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={async () => {
-                  try {
-                    // Track resume download with analytics (async now)
-                    await trackResumeDownload()
-                    
-                    // Create a proper download link
-                    const link = document.createElement('a')
-                    link.href = '/resume.pdf'
-                    link.download = 'Raymond_Valdepenas_Resume.pdf'
-                    link.target = '_blank'
-                    document.body.appendChild(link)
-                    link.click()
-                    document.body.removeChild(link)
-                  } catch (error) {
-                    console.error('Resume download failed:', error)
-                    // Fallback to opening in new tab
-                    window.open('/resume.pdf', '_blank')
-                  }
-                }}
-              >
-                <Download className="w-5 h-5" />
-                Download Resume
-              </motion.button>
+                  className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-6 py-3 rounded-lg font-medium hover:bg-primary/90 transition-colors"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={async () => {
+                    if (RESUME_AVAILABLE) {
+                      await trackResumeDownload();
+                      const link = document.createElement('a')
+                      link.href = '/resume.pdf'
+                      link.download = 'Raymond_Valdepenas_Resume.pdf'
+                      link.target = '_blank'
+                      document.body.appendChild(link)
+                      link.click()
+                      document.body.removeChild(link)
+                    } else {
+                      setShowResumeModal(true)
+                    }
+                  }}
+                >
+                  <Download className="w-5 h-5" />
+                  Download Resume
+                </motion.button>
             </motion.div>
           </motion.div>
         </div>
       </div>
+
+      {/* Resume Unavailable Modal */}
+      <ResumeUnavailableModal 
+        open={showResumeModal} 
+        onOpenChange={setShowResumeModal} 
+      />
     </section>
   )
 }

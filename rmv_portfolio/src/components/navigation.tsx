@@ -4,6 +4,10 @@ import * as React from "react"
 import Link from "next/link"
 import { Menu, X } from "lucide-react"
 import { ThemeToggle } from "@/components/theme-toggle"
+
+
+import { ResumeUnavailableModal } from "@/components/resume-unavailable-modal"
+import { RESUME_AVAILABLE } from "@/constants/resume"
 import { trackResumeDownload } from "@/lib/analytics"
 
 interface NavItem {
@@ -24,6 +28,7 @@ export function Navigation() {
   const [isOpen, setIsOpen] = React.useState(false)
   const [activeSection, setActiveSection] = React.useState("home")
   const [isScrolled, setIsScrolled] = React.useState(false)
+  const [showResumeModal, setShowResumeModal] = React.useState(false)
 
   // Smooth scroll to section
   const scrollToSection = (href: string) => {
@@ -100,15 +105,25 @@ export function Navigation() {
 
           {/* Desktop Actions */}
           <div className="hidden md:flex items-center space-x-4">
-            <Link
-              href="/resume.pdf"
+            <button
+              onClick={async () => {
+                if (RESUME_AVAILABLE) {
+                  await trackResumeDownload();
+                  const link = document.createElement('a')
+                  link.href = '/resume.pdf'
+                  link.download = 'Raymond_Valdepenas_Resume.pdf'
+                  link.target = '_blank'
+                  document.body.appendChild(link)
+                  link.click()
+                  document.body.removeChild(link)
+                } else {
+                  setShowResumeModal(true)
+                }
+              }}
               className="inline-flex items-center px-4 py-2 border border-primary text-primary rounded-md hover:bg-primary hover:text-primary-foreground transition-colors text-sm font-medium"
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={() => trackResumeDownload()}
             >
               Download CV
-            </Link>
+            </button>
             <ThemeToggle />
           </div>
 
@@ -143,22 +158,37 @@ export function Navigation() {
               </button>
             ))}
             <div className="pt-4 border-t border-border">
-              <Link
-                href="/resume.pdf"
-                className="block px-3 py-2 rounded-md text-base font-medium text-primary hover:bg-accent transition-colors"
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={() => {
-                  trackResumeDownload()
-                  setIsOpen(false)
+              <button
+                onClick={async () => {
+                  if (RESUME_AVAILABLE) {
+                    await trackResumeDownload();
+                    const link = document.createElement('a')
+                    link.href = '/resume.pdf'
+                    link.download = 'Raymond_Valdepenas_Resume.pdf'
+                    link.target = '_blank'
+                    document.body.appendChild(link)
+                    link.click()
+                    document.body.removeChild(link)
+                    setIsOpen(false)
+                  } else {
+                    setShowResumeModal(true)
+                    setIsOpen(false)
+                  }
                 }}
+                className="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-primary hover:bg-accent transition-colors"
               >
                 Download CV
-              </Link>
+              </button>
             </div>
           </div>
         </div>
       )}
+
+      {/* Resume Unavailable Modal */}
+      <ResumeUnavailableModal 
+        open={showResumeModal} 
+        onOpenChange={setShowResumeModal} 
+      />
     </nav>
   )
 }
