@@ -1,1 +1,1 @@
-export const RESUME_AVAILABLE = true;
+export const RESUME_AVAILABLE = false;
