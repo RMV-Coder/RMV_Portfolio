@@ -71,6 +71,7 @@ export default function Home() {
             <TypingAnimation 
               texts={[
                 "FULLSTACK DEVELOPER",
+                "SOFTWARE DEVELOPER",
                 "AI/ML ENGINEER", 
                 "IOT DEVELOPER",
                 "DATA SCIENTIST",
