@@ -1,6 +1,9 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // Turbopack configuration for Next.js 16
+  turbopack: {},
+
   // Performance optimizations
   compress: true,
   poweredByHeader: false,
@@ -75,24 +78,6 @@ const nextConfig: NextConfig = {
   experimental: {
     optimizeServerReact: true,
   },
-  
-  // Bundle analyzer (only in development)
-  ...(process.env.ANALYZE === 'true' && {
-    webpack: (config: unknown) => {
-      if (process.env.NODE_ENV === 'development') {
-        // eslint-disable-next-line @typescript-eslint/no-require-imports
-        const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (config as any).plugins.push(
-          new BundleAnalyzerPlugin({
-            analyzerMode: 'server',
-            openAnalyzer: false,
-          })
-        );
-      }
-      return config;
-    },
-  }),
 };
 
 export default nextConfig;

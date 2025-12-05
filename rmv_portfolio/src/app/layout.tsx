@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { //Geist, Geist_Mono, 
   Montserrat } from "next/font/google";
 import "./globals.css";
@@ -97,6 +97,9 @@ export const metadata: Metadata = {
     ],
     apple: '/apple-touch-icon.png',
   },
+};
+
+export const viewport: Viewport = {
   themeColor: [
     { media: '(prefers-color-scheme: light)', color: '#ffffff' },
     { media: '(prefers-color-scheme: dark)', color: '#1e293b' },
