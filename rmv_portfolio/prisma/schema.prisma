@@ -1,0 +1,38 @@
+// This is your Prisma schema file for portfolio ratings
+// Learn more: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  // Prisma 7: url moved to prisma.config.ts
+}
+
+model PortfolioRating {
+  id              String   @id @default(cuid())
+  
+  // Rating scores (0-5)
+  uiux            Int      @default(0) @db.SmallInt
+  performance     Int      @default(0) @db.SmallInt
+  content         Int      @default(0) @db.SmallInt
+  overall         Int      @db.SmallInt // Required field (1-5)
+  
+  // Feedback
+  feedback        String?  @db.Text
+  
+  // Visitor information
+  ipAddress       String?  @db.VarChar(45)
+  userAgent       String?  @db.Text
+  location        String?  @db.VarChar(255)
+  country         String?  @db.VarChar(100)
+  city            String?  @db.VarChar(100)
+  
+  // Timestamp
+  createdAt       DateTime @default(now())
+  
+  @@index([createdAt(sort: Desc)])
+  @@index([overall])
+  @@map("portfolio_ratings")
+}

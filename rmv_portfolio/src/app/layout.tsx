@@ -4,6 +4,7 @@ import { //Geist, Geist_Mono,
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Footer } from "@/components/footer";
+import { RatingTrigger } from "@/components/rating-trigger";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import { GoogleAnalytics } from '@next/third-parties/google';
@@ -249,6 +250,7 @@ export default function RootLayout({
           {children}
           <Analytics />
           <SpeedInsights />
+          <RatingTrigger />
           <Footer />
         </ThemeProvider>
       </body>
