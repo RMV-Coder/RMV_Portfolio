@@ -70,15 +70,23 @@ export async function POST(req: NextRequest) {
       return '⭐'.repeat(rating) + '☆'.repeat(5 - rating);
     };
 
-    // Send email notification
-    const transporter = nodemailer.createTransport({
-      host: process.env.SMTP_HOST,
-      port: Number(process.env.SMTP_PORT),
-      secure: false,
+    // Check if SMTP is configured (skip email if not, but still save to DB)
+    const smtpConfigured = process.env.SMTP_USER && process.env.SMTP_PASS;
+
+    // Send email notification (if SMTP is configured)
+    if (smtpConfigured) {
+      const transporter = nodemailer.createTransport({
+      host: process.env.SMTP_HOST || 'smtp.gmail.com',
+      port: Number(process.env.SMTP_PORT || '587'),
+      secure: process.env.SMTP_SECURE === 'true',
       auth: {
         user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASSWORD,
+        pass: process.env.SMTP_PASS?.replace(/["\s]/g, ''), // Remove quotes and spaces
       },
+      // Add timeout settings for serverless
+      connectionTimeout: 10000,
+      greetingTimeout: 10000,
+      socketTimeout: 10000,
     });
 
     const emailHtml = `
@@ -188,12 +196,15 @@ export async function POST(req: NextRequest) {
       </html>
     `;
 
-    await transporter.sendMail({
-      from: process.env.SMTP_FROM,
-      to: process.env.SMTP_TO,
-      subject: `⭐ New Portfolio Rating: ${averageRating}/5.0`,
-      html: emailHtml,
-    });
+      await transporter.sendMail({
+        from: process.env.SMTP_FROM || process.env.SMTP_USER,
+        to: process.env.SMTP_TO || process.env.SMTP_USER,
+        subject: `⭐ New Portfolio Rating: ${averageRating}/5.0`,
+        html: emailHtml,
+      });
+    } else {
+      console.warn('SMTP not configured - email notification skipped');
+    }
 
     // Store in Prisma database
     try {
