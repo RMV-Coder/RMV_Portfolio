@@ -3,13 +3,11 @@
 import * as React from "react"
 import { motion } from "framer-motion"
 import { ChevronDown } from "lucide-react"
+import { scrollTo } from "@/lib/smooth-scroll"
 
 export function ScrollIndicator() {
   const scrollToNextSection = () => {
-    const aboutSection = document.getElementById("about")
-    if (aboutSection) {
-      aboutSection.scrollIntoView({ behavior: "smooth" })
-    }
+    scrollTo("#about")
   }
 
   return (

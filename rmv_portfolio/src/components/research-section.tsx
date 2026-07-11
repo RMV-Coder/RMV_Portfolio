@@ -4,6 +4,7 @@ import * as React from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { ExternalLink, Calendar, Users, FileText, Tag, BookOpen, ChevronDown, ChevronUp } from "lucide-react"
 import { Parallax } from "@/components/motion/parallax"
+import { scrollTo } from "@/lib/smooth-scroll"
 
 // ORCID Icon Component following official guidelines
 const ORCIDIcon = ({ className }: { className?: string }) => (
@@ -273,7 +274,7 @@ export function ResearchSection() {
             className="mt-4 px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors font-medium"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            onClick={() => document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" })}
+            onClick={() => scrollTo("#contact")}
           >
             Get in Touch
           </motion.button>

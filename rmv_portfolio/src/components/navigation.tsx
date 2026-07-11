@@ -8,6 +8,7 @@ import { ThemeToggle } from "@/components/theme-toggle"
 
 import { ResumeUnavailableModal } from "@/components/resume-unavailable-modal"
 import { downloadResume } from "@/lib/resume"
+import { scrollTo } from "@/lib/smooth-scroll"
 
 interface NavItem {
   name: string
@@ -29,13 +30,10 @@ export function Navigation() {
   const [isScrolled, setIsScrolled] = React.useState(false)
   const [showResumeModal, setShowResumeModal] = React.useState(false)
 
-  // Smooth scroll to section
+  // Smooth scroll to section (via Lenis when available)
   const scrollToSection = (href: string) => {
-    const element = document.querySelector(href)
-    if (element) {
-      element.scrollIntoView({ behavior: "smooth" })
-      setIsOpen(false)
-    }
+    scrollTo(href)
+    setIsOpen(false)
   }
 
   // Handle scroll effects

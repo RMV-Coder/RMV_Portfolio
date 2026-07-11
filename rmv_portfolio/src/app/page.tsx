@@ -14,6 +14,8 @@ import { ScrollIndicator } from "@/components/scroll-indicator"
 import { PerformanceMonitor } from "@/components/performance-monitor"
 import { CustomCursor } from "@/components/custom-cursor"
 import { InteractiveBackground } from "@/components/interactive-background"
+import { SmoothScroll } from "@/components/smooth-scroll"
+import { scrollTo } from "@/lib/smooth-scroll"
 
 // Dynamic imports for better code splitting
 const SkillsSection = dynamic(() => import("@/components/skills-section").then(mod => ({ default: mod.SkillsSection })), {
@@ -55,6 +57,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen">
+      <SmoothScroll />
       <InteractiveBackground />
       <CustomCursor />
       <PerformanceMonitor />
@@ -128,7 +131,7 @@ export default function Home() {
               className="px-8 py-3 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors font-medium"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              onClick={() => document.getElementById("projects")?.scrollIntoView({ behavior: "smooth" })}
+              onClick={() => scrollTo("#projects")}
             >
               View Projects
             </motion.button>
@@ -136,7 +139,7 @@ export default function Home() {
               className="px-8 py-3 border border-primary text-primary rounded-md hover:bg-primary hover:text-primary-foreground transition-colors font-medium"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              onClick={() => document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" })}
+              onClick={() => scrollTo("#contact")}
             >
               Contact Me
             </motion.button>
