@@ -34,34 +34,15 @@ export function AboutSection() {
             {/* Profile Image */}
             <div className="relative max-w-md mx-auto lg:mx-0">
               <div className="aspect-square relative rounded-2xl bg-gradient-to-br from-primary/20 to-secondary/20 p-4">
-                {/* Profile image with security measures */}
                 <div className="w-full h-full relative rounded-xl overflow-hidden">
                   <Image
                     src="/1-3-01.jpeg"
                     alt="Raymond Valdepeñas - Full Stack Developer"
                     fill
-                    className="object-cover object-top select-none pointer-events-none secure-image"
-                    style={{
-                        WebkitUserSelect: 'none',
-                        MozUserSelect: 'none',
-                        msUserSelect: 'none',
-                        userSelect: 'none',
-                        WebkitTouchCallout: 'none',
-                    } as React.CSSProperties}
-                    onContextMenu={(e) => e.preventDefault()}
-                    onDragStart={(e) => e.preventDefault()}
-                    onMouseDown={(e) => e.preventDefault()}
-                    draggable={false}
+                    className="object-cover object-top"
                     priority
                     quality={90}
                     sizes="(max-width: 768px) 100vw, 50vw"
-                  />
-                  {/* Invisible overlay to prevent interactions */}
-                  <div
-                    className="absolute inset-0 select-none pointer-events-auto"
-                    onContextMenu={(e) => e.preventDefault()}
-                    onDragStart={(e) => e.preventDefault()}
-                    style={{ userSelect: 'none' }}
                   />
                 </div>
 
@@ -100,21 +81,21 @@ export function AboutSection() {
           {/* Right Column - Bio Content */}
           <Parallax speed={0.35} className="space-y-6">
             {/* Bio Text */}
-            <div className="space-y-4 selectable-text">
-              <p className="text-lg text-foreground leading-relaxed selectable-text">
+            <div className="space-y-4">
+              <p className="text-lg text-foreground leading-relaxed">
                 Hello! I&apos;m <span className="font-semibold text-primary">Raymond Valdepeñas</span>,
                 a passionate fullstack developer with expertise in building modern web applications
                 and integrating cutting-edge technologies like AI and IoT systems.
               </p>
 
-              <p className="text-muted-foreground leading-relaxed selectable-text">
+              <p className="text-muted-foreground leading-relaxed">
                 With over 5 years of experience in software development, I specialize in creating
                 scalable solutions using React, Next.js, Node.js, and various database technologies.
                 My journey in tech started with a curiosity about how things work, which evolved
                 into a passion for creating digital experiences that make a difference.
               </p>
 
-              <p className="text-muted-foreground leading-relaxed selectable-text">
+              <p className="text-muted-foreground leading-relaxed">
                 I have a strong background in database management and enjoy working on projects
                 that integrate AI capabilities with IoT systems. When I&apos;m not coding, you&apos;ll find
                 me exploring new technologies, contributing to open-source projects, or sharing
