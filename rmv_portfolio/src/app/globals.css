@@ -139,6 +139,19 @@ html.lenis body {
   overflow: clip;
 }
 
+/* Faint dotted texture on the parallax section panels so their slower
+   (background) motion is perceptible against the content. */
+.stack-reveal-pattern {
+  background-image: radial-gradient(circle at center, oklch(0.45 0.03 260 / 0.06) 1px, transparent 1.6px);
+  background-size: 34px 34px;
+  -webkit-mask-image: linear-gradient(to bottom, #000, transparent 70%);
+  mask-image: linear-gradient(to bottom, #000, transparent 70%);
+}
+
+.dark .stack-reveal-pattern {
+  background-image: radial-gradient(circle at center, oklch(0.85 0.02 260 / 0.05) 1px, transparent 1.6px);
+}
+
 /* ── Custom cursor + reactive background ───────────────────────────── */
 :root {
   /* Live cursor position, published by <CustomCursor /> (rAF-throttled). */

@@ -54,11 +54,10 @@ export default function Home() {
   })
   // Hero content lags the scroll (translates up slower); the background lags
   // even more for a layered depth effect. Disabled under reduced motion.
+  // Hero depth is purely positional (no shrink): content lags, background lags
+  // more, so About slides up and covers it via z-index.
   const contentY = useTransform(scrollYProgress, [0, 1], [0, shouldReduceMotion ? 0 : 90])
   const bgY = useTransform(scrollYProgress, [0, 1], [0, shouldReduceMotion ? 0 : 200])
-  // Hero recedes as the next section rises over it: gentle scale-down + a scrim.
-  const heroScale = useTransform(scrollYProgress, [0, 1], [1, shouldReduceMotion ? 1 : 0.94])
-  const heroScrim = useTransform(scrollYProgress, [0, 1], [0, shouldReduceMotion ? 0 : 0.5])
 
   return (
     <div className="min-h-screen">
@@ -78,7 +77,7 @@ export default function Home() {
           <AnimatedBackground />
         </motion.div>
 
-        <motion.div style={{ y: contentY, scale: heroScale }} className="relative z-10">
+        <motion.div style={{ y: contentY }} className="relative z-10">
         <motion.div
           className="text-center px-4 max-w-4xl mx-auto"
           initial={{ opacity: 0, y: 50 }}
@@ -160,34 +159,28 @@ export default function Home() {
         </motion.div>
         </motion.div>
 
-        {/* Recede scrim — hero sinks into shadow as About rises over it */}
-        <motion.div
-          aria-hidden
-          className="pointer-events-none absolute inset-0 bg-black z-20"
-          style={{ opacity: heroScrim }}
-        />
-
         <ScrollIndicator />
       </section>
 
-      {/* Stacked, layered sections — each rises over and covers the previous */}
-      <StackReveal index={1}>
+      {/* Stacked parallax layers — each covers the previous by z-index, clamps
+          on exit, and its background lags more than its content. */}
+      <StackReveal index={1} tone="muted">
         <AboutSection />
       </StackReveal>
 
-      <StackReveal index={2}>
+      <StackReveal index={2} tone="base">
         <SkillsSection />
       </StackReveal>
 
-      <StackReveal index={3}>
+      <StackReveal index={3} tone="muted">
         <ResearchSection />
       </StackReveal>
 
-      <StackReveal index={4}>
+      <StackReveal index={4} tone="base">
         <ProjectsSection />
       </StackReveal>
 
-      <StackReveal index={5}>
+      <StackReveal index={5} tone="muted">
         <ContactSection />
       </StackReveal>
 

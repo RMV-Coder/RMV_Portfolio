@@ -122,7 +122,7 @@ export function ResearchSection() {
   const [hoveredCard, setHoveredCard] = React.useState<number | null>(null)
 
   return (
-    <section id="research" className="py-20 bg-muted/30">
+    <section id="research" className="py-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <Parallax speed={0.25} className="text-center mb-16">

@@ -80,7 +80,7 @@ export function SkillsSection() {
   }
 
   return (
-    <section id="skills" className="py-20 bg-background">
+    <section id="skills" className="py-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <Parallax speed={0.25} className="text-center mb-12">
