@@ -1,9 +1,9 @@
 "use client"
 
 import * as React from "react"
-import { motion } from "framer-motion"
 import useSWR from "swr"
 import { Search, Github, Loader2, AlertCircle, RefreshCw, Filter } from "lucide-react"
+import { Parallax } from "@/components/motion/parallax"
 import { githubService } from "@/lib/github"
 import { ProjectCard } from "@/components/project-card"
 import { Button } from "@/components/ui/button"
@@ -99,19 +99,15 @@ export function ProjectsSection() {
     <section id="projects" className="py-20 bg-background">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
-        <motion.div
-          className="text-center mb-12"
-          initial={{ opacity: 0, y: 50 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          viewport={{ once: true }}
-        >
-          <h2 className="p-4 text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-            Featured Projects
-          </h2>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-8">
-            A collection of my recent work, showcasing various technologies and problem-solving approaches
-          </p>
+        <div className="text-center mb-12">
+          <Parallax speed={0.25}>
+            <h2 className="p-4 text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+              Featured Projects
+            </h2>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-8">
+              A collection of my recent work, showcasing various technologies and problem-solving approaches
+            </p>
+          </Parallax>
 
           {/* Search and Filter Controls */}
           <div className="flex flex-col sm:flex-row gap-4 items-center justify-center max-w-4xl mx-auto">
@@ -202,7 +198,7 @@ export function ProjectsSection() {
           </div>
 
 
-        </motion.div>
+        </div>
 
         {/* Content */}
         {isLoading ? (
@@ -288,13 +284,7 @@ export function ProjectsSection() {
             )}
 
             {/* GitHub Link */}
-            <motion.div
-              className="text-center mt-12"
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-              viewport={{ once: true }}
-            >
+            <Parallax speed={0.2} className="text-center mt-12">
               <a
                 href="https://github.com/RMV-Coder"
                 target="_blank"
@@ -304,7 +294,7 @@ export function ProjectsSection() {
                 <Github className="w-5 h-5" />
                 View all projects on GitHub
               </a>
-            </motion.div>
+            </Parallax>
           </>
         )}
       </div>
