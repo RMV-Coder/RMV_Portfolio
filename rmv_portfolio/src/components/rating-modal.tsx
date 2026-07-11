@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { Star, Send, Loader2 } from "lucide-react"
+import { Star, Send, Loader2, Github } from "lucide-react"
 import {
   Dialog,
   DialogContent,
@@ -12,6 +12,8 @@ import {
 } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { RatingModalProps } from "@/app/interface/rating"
+
+const PORTFOLIO_REPO_URL = "https://github.com/RMV-Coder/RMV_Portfolio"
 
 const ratingCategories = [
   { name: 'uiux', label: 'UI/UX Design', description: 'Visual design and user experience' },
@@ -37,6 +39,17 @@ export function RatingModal({ open, onOpenChange }: RatingModalProps) {
     setRatings(prev => ({ ...prev, [category]: score }))
   }
 
+  // Reset the form when the dialog closes so a reopened modal starts fresh
+  // (the success state stays open until the visitor dismisses it).
+  const handleOpenChange = (nextOpen: boolean) => {
+    onOpenChange(nextOpen)
+    if (!nextOpen) {
+      setRatings({ uiux: 0, performance: 0, content: 0, overall: 0 })
+      setFeedback('')
+      setSubmitStatus('idle')
+    }
+  }
+
   const handleSubmit = async () => {
     // Check if at least overall rating is provided
     if (ratings.overall === 0) {
@@ -60,23 +73,9 @@ export function RatingModal({ open, onOpenChange }: RatingModalProps) {
       if (!response.ok) throw new Error('Failed to submit rating')
 
       setSubmitStatus('success')
-      
+
       // Mark as rated in localStorage
       localStorage.setItem('portfolioRated', 'true')
-      
-      // Close modal after 2 seconds
-      setTimeout(() => {
-        onOpenChange(false)
-        // Reset form
-        setRatings({
-          uiux: 0,
-          performance: 0,
-          content: 0,
-          overall: 0,
-        })
-        setFeedback('')
-        setSubmitStatus('idle')
-      }, 2000)
     } catch (error) {
       console.error('Rating submission error:', error)
       setSubmitStatus('error')
@@ -122,7 +121,7 @@ export function RatingModal({ open, onOpenChange }: RatingModalProps) {
   }
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-2xl">Rate My Portfolio</DialogTitle>
@@ -152,6 +151,29 @@ export function RatingModal({ open, onOpenChange }: RatingModalProps) {
             <p className="text-muted-foreground">
               Your rating has been submitted successfully. I appreciate your feedback!
             </p>
+            <p className="mt-6 text-sm text-muted-foreground">
+              Enjoyed the portfolio? A star on GitHub means a lot!
+            </p>
+            <div className="mt-3 flex flex-col sm:flex-row items-center justify-center gap-2">
+              <Button asChild>
+                <a
+                  href={PORTFOLIO_REPO_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <Github className="w-4 h-4 mr-2" />
+                  Star this repo
+                  <Star className="w-4 h-4 ml-2 fill-yellow-400 text-yellow-400" />
+                </a>
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => handleOpenChange(false)}
+              >
+                Close
+              </Button>
+            </div>
           </div>
         ) : (
           <>
