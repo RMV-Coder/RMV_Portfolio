@@ -9,18 +9,38 @@ const MAX_REQUESTS = 5
 
 function checkRateLimit(ip: string): boolean {
   const now = Date.now()
+
+  // Evict fully-expired entries so the map can't grow unbounded.
+  for (const [key, times] of downloadTracking) {
+    if (times.every(t => now - t >= RATE_LIMIT_WINDOW)) downloadTracking.delete(key)
+  }
+
   const requests = downloadTracking.get(ip) || []
-  
+
   // Filter out old requests
   const recentRequests = requests.filter(timestamp => now - timestamp < RATE_LIMIT_WINDOW)
-  
+
   if (recentRequests.length >= MAX_REQUESTS) {
     return false
   }
-  
+
   recentRequests.push(now)
   downloadTracking.set(ip, recentRequests)
   return true
+}
+
+// Only accept requests that originate from the site itself. A same-origin
+// browser fetch always sends the Origin header; a bare curl loop does not,
+// which blocks the trivial inbox-flood / SMTP-quota-exhaustion path.
+function isSameOrigin(request: NextRequest): boolean {
+  const origin = request.headers.get('origin')
+  const host = request.headers.get('host')
+  if (!origin || !host) return false
+  try {
+    return new URL(origin).host === host
+  } catch {
+    return false
+  }
 }
 
 function getDeviceInfo(userAgent: string): string {
@@ -49,9 +69,14 @@ function getBrowserInfo(userAgent: string): string {
 
 export async function POST(request: NextRequest) {
   try {
+    // Reject cross-origin / scripted requests that didn't come from the site.
+    if (!isSameOrigin(request)) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+    }
+
     // Rate limiting
     const ip = request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'unknown'
-    
+
     if (!checkRateLimit(ip)) {
       return NextResponse.json(
         { error: 'Too many requests' },
