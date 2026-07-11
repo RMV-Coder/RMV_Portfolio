@@ -85,15 +85,11 @@ export const metadata: Metadata = {
     images: ["/og-image.png"],
     creator: "@mond_valdepenas",
   },
-  verification: {
-    google: "your-google-verification-code",
-  },
   alternates: {
     canonical: "https://raymondvaldepenas-dev.vercel.app",
   },
   icons: {
     icon: [
-      { url: '/favicon.ico', sizes: 'any' },
       { url: '/favicon.svg', type: 'image/svg+xml' },
     ],
     apple: '/apple-touch-icon.png',
