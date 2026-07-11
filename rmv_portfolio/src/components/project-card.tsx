@@ -28,27 +28,27 @@ export function ProjectCard({ project, featured = false }: ProjectCardProps) {
         featured ? 'lg:col-span-2 xl:col-span-2' : ''
       }`}
     >
-      {/* Featured Badge */}
-      {featured && (
-        <div className="absolute top-4 left-4 z-10">
-          <div className="flex items-center gap-1 bg-primary text-primary-foreground px-2 py-1 rounded-full text-xs font-medium">
-            <Zap className="w-3 h-3" />
-            Featured
-          </div>
-        </div>
-      )}
-
-      {/* Status Badge */}
-      {project.metadata?.status && (
-        <div className="absolute top-4 right-4 z-10">
-          <div className={`px-2 py-1 rounded-full text-xs font-medium capitalize ${getStatusColor(project.metadata.status)} bg-background/80 backdrop-blur-sm`}>
-            {project.metadata.status}
-          </div>
-        </div>
-      )}
-
       {/* Card Content */}
       <div className="p-6 h-full flex flex-col">
+        {/* Badges row — in normal flow so they never overlap the title/stats */}
+        {(featured || project.metadata?.status) && (
+          <div className="flex items-center justify-between gap-2 mb-4">
+            {featured ? (
+              <div className="flex items-center gap-1 bg-primary text-primary-foreground px-2 py-1 rounded-full text-xs font-medium">
+                <Zap className="w-3 h-3" />
+                Featured
+              </div>
+            ) : (
+              <span />
+            )}
+            {project.metadata?.status && (
+              <div className={`px-2 py-1 rounded-full text-xs font-medium capitalize ${getStatusColor(project.metadata.status)} bg-background/80`}>
+                {project.metadata.status}
+              </div>
+            )}
+          </div>
+        )}
+
         {/* Header */}
         <div className="flex items-start justify-between mb-4">
           <div className="flex-1 min-w-0">
