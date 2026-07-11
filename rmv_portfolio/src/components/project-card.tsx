@@ -12,7 +12,7 @@ import {
   Zap
 } from "lucide-react"
 import type { EnhancedProject } from "@/app/interface/github"
-import { formatDate, getStatusColor, getCategoryColor } from "@/lib/github"
+import { formatDate, getStatusColor, getCategoryColor } from "@/lib/github-format"
 import { trackProjectClick } from "@/lib/analytics"
 
 interface ProjectCardProps {

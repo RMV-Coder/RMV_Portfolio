@@ -4,7 +4,6 @@ import * as React from "react"
 import useSWR from "swr"
 import { Search, Github, Loader2, AlertCircle, RefreshCw, Filter } from "lucide-react"
 import { Parallax } from "@/components/motion/parallax"
-import { githubService } from "@/lib/github"
 import { ProjectCard } from "@/components/project-card"
 import { Button } from "@/components/ui/button"
 import {
@@ -17,11 +16,20 @@ import {
 } from "@/components/ui/dropdown-menu"
 import type { EnhancedProject } from "@/app/interface/github"
 
-const fetcher = () => githubService.getEnhancedProjects()
+// Fetch through the server-side proxy — one cached upstream call serves all
+// visitors, so browser-side GitHub rate limits can't break this section.
+const fetcher = async (url: string): Promise<EnhancedProject[]> => {
+  const res = await fetch(url)
+  if (!res.ok) {
+    const body = (await res.json().catch(() => ({}))) as { error?: string }
+    throw new Error(body.error || `Failed to load projects (${res.status})`)
+  }
+  return res.json()
+}
 
 export function ProjectsSection() {
   const { data: projects, error, isLoading, mutate } = useSWR<EnhancedProject[]>(
-    'github-projects',
+    '/api/projects',
     fetcher,
     {
       revalidateOnFocus: false,
