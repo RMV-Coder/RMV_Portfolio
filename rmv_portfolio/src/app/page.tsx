@@ -71,7 +71,7 @@ export default function Home() {
       <section
         ref={heroRef}
         id="home"
-        className="relative min-h-screen flex items-center justify-center overflow-hidden"
+        className="relative isolate z-0 min-h-screen flex items-center justify-center overflow-hidden"
       >
         <motion.div className="absolute inset-0" style={{ y: bgY }}>
           <AnimatedBackground />
