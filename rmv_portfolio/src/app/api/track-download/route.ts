@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import nodemailer from 'nodemailer'
+import { escapeHtml } from '@/lib/utils'
 
 // Rate limiting map
 const downloadTracking = new Map<string, number[]>()
@@ -121,28 +122,28 @@ export async function POST(request: NextRequest) {
             </div>
             
             <div class="info-row">
-              <span class="label">🌍 Location:</span> ${city}, ${region}, ${country}
+              <span class="label">🌍 Location:</span> ${escapeHtml(city)}, ${escapeHtml(region)}, ${escapeHtml(country)}
             </div>
-            
+
             <div class="info-row">
-              <span class="label">💻 Device:</span> ${device}
+              <span class="label">💻 Device:</span> ${escapeHtml(device)}
             </div>
-            
+
             <div class="info-row">
-              <span class="label">🌐 Browser:</span> ${browser}
+              <span class="label">🌐 Browser:</span> ${escapeHtml(browser)}
             </div>
-            
+
             <div class="info-row">
-              <span class="label">🔗 IP Address:</span> ${ip}
+              <span class="label">🔗 IP Address:</span> ${escapeHtml(ip)}
             </div>
-            
+
             <div class="info-row">
-              <span class="label">🕒 Timezone:</span> ${timezone}
+              <span class="label">🕒 Timezone:</span> ${escapeHtml(timezone)}
             </div>
-            
+
             <div class="footer">
               <p>This is an automated notification from your portfolio website.</p>
-              <p><strong>User Agent:</strong> ${userAgent}</p>
+              <p><strong>User Agent:</strong> ${escapeHtml(userAgent)}</p>
             </div>
           </div>
         </div>

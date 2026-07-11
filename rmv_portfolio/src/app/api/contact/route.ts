@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import nodemailer from 'nodemailer'
 import { contactFormSchema } from '@/lib/validations'
+import { escapeHtml } from '@/lib/utils'
 
 // Rate limiting storage (in production, use Redis or database)
 const rateLimit = new Map<string, { count: number; resetTime: number }>()
@@ -109,22 +110,22 @@ export async function POST(request: NextRequest) {
             <div class="content">
               <div class="field">
                 <div class="label">Name:</div>
-                <div class="value">${validatedData.name}</div>
+                <div class="value">${escapeHtml(validatedData.name)}</div>
               </div>
-              
+
               <div class="field">
                 <div class="label">Email:</div>
-                <div class="value">${validatedData.email}</div>
+                <div class="value">${escapeHtml(validatedData.email)}</div>
               </div>
-              
+
               <div class="field">
                 <div class="label">Subject:</div>
-                <div class="value">${validatedData.subject}</div>
+                <div class="value">${escapeHtml(validatedData.subject)}</div>
               </div>
-              
+
               <div class="field">
                 <div class="label">Message:</div>
-                <div class="value">${validatedData.message.replace(/\n/g, '<br>')}</div>
+                <div class="value">${escapeHtml(validatedData.message).replace(/\n/g, '<br>')}</div>
               </div>
             </div>
             
@@ -205,7 +206,7 @@ This is an automated response from my portfolio contact form.
                 </div>
                 
                 <div class="content">
-                  <p>Hi ${validatedData.name},</p>
+                  <p>Hi ${escapeHtml(validatedData.name)},</p>
                   
                   <p>Thank you for reaching out! I've received your message and will get back to you as soon as possible.</p>
                   
