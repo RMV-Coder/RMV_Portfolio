@@ -7,8 +7,7 @@ import { ThemeToggle } from "@/components/theme-toggle"
 
 
 import { ResumeUnavailableModal } from "@/components/resume-unavailable-modal"
-import { RESUME_AVAILABLE } from "@/constants/resume"
-import { trackResumeDownload } from "@/lib/analytics"
+import { downloadResume } from "@/lib/resume"
 
 interface NavItem {
   name: string
@@ -107,18 +106,7 @@ export function Navigation() {
           <div className="hidden md:flex items-center space-x-4">
             <button
               onClick={async () => {
-                if (RESUME_AVAILABLE) {
-                  await trackResumeDownload();
-                  const link = document.createElement('a')
-                  link.href = '/resume.pdf'
-                  link.download = 'Raymond_Valdepenas_Resume.pdf'
-                  link.target = '_blank'
-                  document.body.appendChild(link)
-                  link.click()
-                  document.body.removeChild(link)
-                } else {
-                  setShowResumeModal(true)
-                }
+                if (!(await downloadResume())) setShowResumeModal(true)
               }}
               className="inline-flex items-center px-4 py-2 border border-primary text-primary rounded-md hover:bg-primary hover:text-primary-foreground transition-colors text-sm font-medium"
             >
@@ -160,20 +148,8 @@ export function Navigation() {
             <div className="pt-4 border-t border-border">
               <button
                 onClick={async () => {
-                  if (RESUME_AVAILABLE) {
-                    await trackResumeDownload();
-                    const link = document.createElement('a')
-                    link.href = '/resume.pdf'
-                    link.download = 'Raymond_Valdepenas_Resume.pdf'
-                    link.target = '_blank'
-                    document.body.appendChild(link)
-                    link.click()
-                    document.body.removeChild(link)
-                    setIsOpen(false)
-                  } else {
-                    setShowResumeModal(true)
-                    setIsOpen(false)
-                  }
+                  if (!(await downloadResume())) setShowResumeModal(true)
+                  setIsOpen(false)
                 }}
                 className="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-primary hover:bg-accent transition-colors"
               >

@@ -9,8 +9,7 @@ import { Parallax } from "@/components/motion/parallax"
 
 
 import { ResumeUnavailableModal } from "@/components/resume-unavailable-modal"
-import { RESUME_AVAILABLE } from "@/constants/resume"
-import { trackResumeDownload } from "@/lib/analytics"
+import { downloadResume } from "@/lib/resume"
 
 export function AboutSection() {
   const [showResumeModal, setShowResumeModal] = React.useState(false)
@@ -162,18 +161,7 @@ export function AboutSection() {
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   onClick={async () => {
-                    if (RESUME_AVAILABLE) {
-                      await trackResumeDownload();
-                      const link = document.createElement('a')
-                      link.href = '/resume.pdf'
-                      link.download = 'Raymond_Valdepenas_Resume.pdf'
-                      link.target = '_blank'
-                      document.body.appendChild(link)
-                      link.click()
-                      document.body.removeChild(link)
-                    } else {
-                      setShowResumeModal(true)
-                    }
+                    if (!(await downloadResume())) setShowResumeModal(true)
                   }}
                 >
                   <Download className="w-5 h-5" />
