@@ -1,47 +1,41 @@
 "use client"
 
 import * as React from "react"
-import { motion, useMotionValue, useSpring } from "framer-motion"
-import { Code2, User, Zap, BookOpen, FolderGit2, Mail, type LucideIcon } from "lucide-react"
+import { motion, useMotionValue, useSpring, AnimatePresence } from "framer-motion"
 
 type SectionId = "home" | "about" | "skills" | "research" | "projects" | "contact"
+type CursorMode = "default" | "link" | "label" | "text"
 
-type CursorMode = "default" | "link" | "text"
-
-interface SectionIdentity {
-  color: string
-  Icon: LucideIcon
-  label: string
+// Per-section accent colour — the cursor's only identity signal now (the old
+// embedded icon was dropped as clutter). Tuned to read on light and dark.
+const SECTION_COLOR: Record<SectionId, string> = {
+  home: "#3b82f6",
+  about: "#f59e0b",
+  skills: "#06b6d4",
+  research: "#22c55e",
+  projects: "#8b5cf6",
+  contact: "#f43f5e",
 }
 
-// Per-section cursor identity. Colors are picked to read well in light AND dark.
-const SECTION_IDENTITY: Record<SectionId, SectionIdentity> = {
-  home: { color: "#3b82f6", Icon: Code2, label: "home" },
-  about: { color: "#f59e0b", Icon: User, label: "about" },
-  skills: { color: "#06b6d4", Icon: Zap, label: "skills" },
-  research: { color: "#22c55e", Icon: BookOpen, label: "research" },
-  projects: { color: "#8b5cf6", Icon: FolderGit2, label: "projects" },
-  contact: { color: "#f43f5e", Icon: Mail, label: "contact" },
-}
-
-const KNOWN_SECTIONS = new Set(Object.keys(SECTION_IDENTITY))
+const KNOWN_SECTIONS = new Set(Object.keys(SECTION_COLOR))
 
 const INTERACTIVE_SELECTOR =
-  'a, button, [role="button"], input, textarea, select, [data-cursor="link"]'
+  'a, button, [role="button"], input, textarea, select, [data-cursor]'
 const TEXT_SELECTOR = "input, textarea"
 
 export function CustomCursor() {
   const [enabled, setEnabled] = React.useState(false)
   const [section, setSection] = React.useState<SectionId>("home")
   const [mode, setMode] = React.useState<CursorMode>("default")
+  const [label, setLabel] = React.useState("")
 
   // Dot tracks 1:1; ring lags behind via a spring.
   const dotX = useMotionValue(-100)
   const dotY = useMotionValue(-100)
   const ringXRaw = useMotionValue(-100)
   const ringYRaw = useMotionValue(-100)
-  const ringX = useSpring(ringXRaw, { stiffness: 350, damping: 30, mass: 0.5 })
-  const ringY = useSpring(ringYRaw, { stiffness: 350, damping: 30, mass: 0.5 })
+  const ringX = useSpring(ringXRaw, { stiffness: 380, damping: 30, mass: 0.4 })
+  const ringY = useSpring(ringYRaw, { stiffness: 380, damping: 30, mass: 0.4 })
 
   // Decide whether the custom cursor should run at all.
   React.useEffect(() => {
@@ -104,20 +98,28 @@ export function CustomCursor() {
     }
   }, [enabled, dotX, dotY, ringXRaw, ringYRaw])
 
-  // Interactive-element awareness.
+  // Interactive-element awareness: text inputs → I-beam, elements with a
+  // data-cursor="Label" → morph to that label, other interactives → grow ring.
   React.useEffect(() => {
     if (!enabled) return
+    const resolve = (target: Element | null) => {
+      if (!target || !target.closest) return { mode: "default" as CursorMode, label: "" }
+      if (target.closest(TEXT_SELECTOR)) return { mode: "text" as CursorMode, label: "" }
+      const labelled = target.closest("[data-cursor]") as HTMLElement | null
+      if (labelled) return { mode: "label" as CursorMode, label: labelled.dataset.cursor || "" }
+      if (target.closest(INTERACTIVE_SELECTOR)) return { mode: "link" as CursorMode, label: "" }
+      return { mode: "default" as CursorMode, label: "" }
+    }
     const onOver = (e: PointerEvent) => {
-      const target = e.target as Element | null
-      if (!target || !target.closest) return
-      if (target.closest(TEXT_SELECTOR)) setMode("text")
-      else if (target.closest(INTERACTIVE_SELECTOR)) setMode("link")
-      else setMode("default")
+      const next = resolve(e.target as Element | null)
+      setMode(next.mode)
+      setLabel(next.label)
     }
     const onOut = (e: PointerEvent) => {
       const related = e.relatedTarget as Element | null
       if (!related || !related.closest || !related.closest(INTERACTIVE_SELECTOR)) {
         setMode("default")
+        setLabel("")
       }
     }
     window.addEventListener("pointerover", onOver, { passive: true })
@@ -164,10 +166,11 @@ export function CustomCursor() {
 
   if (!enabled) return null
 
-  const identity = SECTION_IDENTITY[section]
-  const Icon = identity.Icon
+  const color = SECTION_COLOR[section]
   const isLink = mode === "link"
+  const isLabel = mode === "label"
   const isText = mode === "text"
+  const hideDot = isLink || isLabel
 
   return (
     <>
@@ -178,30 +181,39 @@ export function CustomCursor() {
         style={{ x: ringX, y: ringY }}
       >
         <motion.div
-          className="absolute -translate-x-1/2 -translate-y-1/2 rounded-full border-2 flex items-center justify-center"
-          style={{ borderColor: identity.color, color: identity.color }}
+          className="absolute -translate-x-1/2 -translate-y-1/2 flex items-center justify-center whitespace-nowrap font-medium"
+          style={{ borderColor: color, color: isLabel ? "#fff" : color }}
           animate={{
-            width: isText ? 4 : isLink ? 56 : 40,
-            height: isText ? 34 : isLink ? 56 : 40,
-            borderRadius: isText ? 4 : 999,
-            backgroundColor: isLink ? `${identity.color}1f` : "rgba(0,0,0,0)",
-            opacity: isText ? 0.9 : 1,
+            width: isText ? 3 : isLabel ? "auto" : isLink ? 52 : 34,
+            height: isText ? 26 : isLabel ? 34 : isLink ? 52 : 34,
+            paddingLeft: isLabel ? 16 : 0,
+            paddingRight: isLabel ? 16 : 0,
+            borderRadius: isText ? 2 : 999,
+            borderWidth: isLabel || isText ? 0 : 1.5,
+            backgroundColor: isLabel
+              ? color
+              : isLink
+                ? `${color}1f`
+                : isText
+                  ? color
+                  : "rgba(0,0,0,0)",
           }}
-          transition={{ type: "spring", stiffness: 400, damping: 28 }}
+          transition={{ type: "spring", stiffness: 420, damping: 30 }}
         >
-          <motion.span
-            key={section}
-            initial={{ scale: 0, rotate: -45, opacity: 0 }}
-            animate={{
-              scale: isText ? 0 : isLink ? 0 : 1,
-              rotate: 0,
-              opacity: isText || isLink ? 0 : 1,
-            }}
-            transition={{ type: "spring", stiffness: 500, damping: 24 }}
-            className="flex items-center justify-center"
-          >
-            <Icon className="w-3.5 h-3.5" strokeWidth={2.5} />
-          </motion.span>
+          <AnimatePresence mode="popLayout">
+            {isLabel && (
+              <motion.span
+                key={label}
+                initial={{ opacity: 0, scale: 0.6 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.6 }}
+                transition={{ duration: 0.14 }}
+                className="text-xs tracking-wide"
+              >
+                {label}
+              </motion.span>
+            )}
+          </AnimatePresence>
         </motion.div>
       </motion.div>
 
@@ -213,11 +225,11 @@ export function CustomCursor() {
       >
         <motion.div
           className="absolute -translate-x-1/2 -translate-y-1/2 rounded-full"
-          style={{ backgroundColor: identity.color }}
+          style={{ backgroundColor: color }}
           animate={{
-            width: isLink ? 0 : 6,
-            height: isLink ? 0 : 6,
-            opacity: isLink ? 0 : 1,
+            width: hideDot ? 0 : 6,
+            height: hideDot ? 0 : 6,
+            opacity: hideDot ? 0 : 1,
           }}
           transition={{ type: "spring", stiffness: 500, damping: 28 }}
         />

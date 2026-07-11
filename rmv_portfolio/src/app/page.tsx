@@ -17,6 +17,7 @@ import { InteractiveBackground } from "@/components/interactive-background"
 import { SmoothScroll } from "@/components/smooth-scroll"
 import { scrollTo } from "@/lib/smooth-scroll"
 import { StackReveal } from "@/components/motion/stack-reveal"
+import { Magnetic } from "@/components/motion/magnetic"
 
 // Dynamic imports for better code splitting
 const SkillsSection = dynamic(() => import("@/components/skills-section").then(mod => ({ default: mod.SkillsSection })), {
@@ -131,22 +132,28 @@ export default function Home() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 1.8 }}
           >
-            <motion.button 
-              className="px-8 py-3 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors font-medium"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => scrollTo("#projects")}
-            >
-              View Projects
-            </motion.button>
-            <motion.button 
-              className="px-8 py-3 border border-primary text-primary rounded-md hover:bg-primary hover:text-primary-foreground transition-colors font-medium"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => scrollTo("#contact")}
-            >
-              Contact Me
-            </motion.button>
+            <Magnetic>
+              <motion.button
+                className="px-8 py-3 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors font-medium"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => scrollTo("#projects")}
+                data-cursor="View"
+              >
+                View Projects
+              </motion.button>
+            </Magnetic>
+            <Magnetic>
+              <motion.button
+                className="px-8 py-3 border border-primary text-primary rounded-md hover:bg-primary hover:text-primary-foreground transition-colors font-medium"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => scrollTo("#contact")}
+                data-cursor="Say hi"
+              >
+                Contact Me
+              </motion.button>
+            </Magnetic>
           </motion.div>
           
           <SocialLinks />
