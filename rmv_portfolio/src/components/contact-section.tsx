@@ -152,7 +152,7 @@ export function ContactSection() {
                     href={social.href}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="p-3 rounded-full bg-card border hover:border-primary hover:shadow-md transition-all duration-300"
+                    className="p-3 rounded-full bg-card border hover:border-primary hover:shadow-md transition-[border-color,box-shadow] duration-300"
                     whileHover={{ scale: 1.1, y: -2 }}
                     whileTap={{ scale: 0.95 }}
                     aria-label={social.label}

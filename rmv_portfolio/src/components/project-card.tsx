@@ -1,6 +1,5 @@
 "use client"
 
-import * as React from "react"
 import { motion } from "framer-motion"
 import { 
   ExternalLink, 
@@ -22,30 +21,12 @@ interface ProjectCardProps {
   featured?: boolean
 }
 
-export function ProjectCard({ project, index, featured = false }: ProjectCardProps) {
-  const [isHovered, setIsHovered] = React.useState(false)
-
-  const cardVariants = {
-    hidden: { opacity: 0, y: 50 },
-    visible: { 
-      opacity: 1, 
-      y: 0,
-      transition: { duration: 0.6, delay: index * 0.1 }
-    }
-  }
-
+export function ProjectCard({ project, featured = false }: ProjectCardProps) {
   return (
-    <motion.div
-      className={`group relative bg-card rounded-xl border border-border hover:border-primary/50 overflow-hidden transition-all duration-300 ${
+    <div
+      className={`group relative bg-card rounded-xl border border-border hover:border-primary/50 overflow-hidden transition-colors duration-300 ${
         featured ? 'lg:col-span-2 xl:col-span-2' : ''
       }`}
-      variants={cardVariants}
-      initial="hidden"
-      whileInView="visible"
-      whileHover="hover"
-      viewport={{ once: true }}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
     >
       {/* Featured Badge */}
       {featured && (
@@ -205,10 +186,7 @@ export function ProjectCard({ project, index, featured = false }: ProjectCardPro
       </div>
 
       {/* Hover Overlay */}
-      <motion.div
-        className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
-        animate={{ opacity: isHovered ? 1 : 0 }}
-      />
-    </motion.div>
+      <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+    </div>
   )
 }

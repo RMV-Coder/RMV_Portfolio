@@ -119,8 +119,6 @@ const publications: Publication[] = [
 ]
 
 export function ResearchSection() {
-  const [hoveredCard, setHoveredCard] = React.useState<number | null>(null)
-
   return (
     <section id="research" className="py-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -138,10 +136,8 @@ export function ResearchSection() {
         <div className="space-y-8">
           {publications.map((publication, index) => (
             <Parallax key={index} speed={0.15}>
-            <motion.article
-              className="group relative bg-card rounded-xl border border-border hover:border-primary/50 overflow-hidden transition-all duration-300"
-              onMouseEnter={() => setHoveredCard(index)}
-              onMouseLeave={() => setHoveredCard(null)}
+            <article
+              className="group relative bg-card rounded-xl border border-border hover:border-primary/50 overflow-hidden transition-colors duration-300"
             >
               <div className="p-8">
                 {/* Title and DOI */}
@@ -256,11 +252,8 @@ export function ResearchSection() {
               </div>
 
               {/* Hover Overlay */}
-              <motion.div
-                className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
-                animate={{ opacity: hoveredCard === index ? 1 : 0 }}
-              />
-            </motion.article>
+              <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+            </article>
             </Parallax>
           ))}
         </div>
