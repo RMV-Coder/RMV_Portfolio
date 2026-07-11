@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import dynamic from "next/dynamic"
-import { motion } from "framer-motion"
+import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion"
 import TypographyLead from "@/components/typography/lead"
 import TypographyP from "@/components/typography/paragraph"
 import { Navigation } from "@/components/navigation"
@@ -12,6 +12,8 @@ import { AnimatedBackground } from "@/components/animated-background"
 import { SocialLinks } from "@/components/social-links"
 import { ScrollIndicator } from "@/components/scroll-indicator"
 import { PerformanceMonitor } from "@/components/performance-monitor"
+import { CustomCursor } from "@/components/custom-cursor"
+import { InteractiveBackground } from "@/components/interactive-background"
 
 // Dynamic imports for better code splitting
 const SkillsSection = dynamic(() => import("@/components/skills-section").then(mod => ({ default: mod.SkillsSection })), {
@@ -40,17 +42,37 @@ const ResearchSection = dynamic(() => import("@/components/research-section").th
 })
 
 export default function Home() {
+  const heroRef = React.useRef<HTMLElement>(null)
+  const shouldReduceMotion = useReducedMotion()
+  const { scrollYProgress } = useScroll({
+    target: heroRef,
+    offset: ["start start", "end start"],
+  })
+  // Hero content lags the scroll (translates up slower); the background lags
+  // even more for a layered depth effect. Disabled under reduced motion.
+  const contentY = useTransform(scrollYProgress, [0, 1], [0, shouldReduceMotion ? 0 : 90])
+  const bgY = useTransform(scrollYProgress, [0, 1], [0, shouldReduceMotion ? 0 : 200])
+
   return (
     <div className="min-h-screen">
+      <InteractiveBackground />
+      <CustomCursor />
       <PerformanceMonitor />
       <Navigation />
-      
+
       {/* Hero Section */}
-      <section id="home" className="relative min-h-screen flex items-center justify-center overflow-hidden">
-        <AnimatedBackground />
-        
+      <section
+        ref={heroRef}
+        id="home"
+        className="relative min-h-screen flex items-center justify-center overflow-hidden"
+      >
+        <motion.div className="absolute inset-0" style={{ y: bgY }}>
+          <AnimatedBackground />
+        </motion.div>
+
+        <motion.div style={{ y: contentY }} className="relative z-10">
         <motion.div
-          className="relative z-10 text-center px-4 max-w-4xl mx-auto"
+          className="text-center px-4 max-w-4xl mx-auto"
           initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1 }}
@@ -122,7 +144,8 @@ export default function Home() {
           
           <SocialLinks />
         </motion.div>
-        
+        </motion.div>
+
         <ScrollIndicator />
       </section>
 
