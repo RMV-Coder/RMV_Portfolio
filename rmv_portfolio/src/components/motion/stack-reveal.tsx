@@ -52,7 +52,7 @@ export function StackReveal({ children, index, tone = "base" }: StackRevealProps
       <div ref={ref} className="relative isolate" style={{ zIndex: index }}>
         <div className="absolute inset-0 -z-10">
           <div className="absolute inset-0 bg-background" />
-          {tone === "muted" && <div className="absolute inset-0 bg-muted/40" />}
+          {tone === "muted" && <div className="absolute inset-0 bg-muted/60" />}
         </div>
         {children}
       </div>
@@ -70,10 +70,10 @@ export function StackReveal({ children, index, tone = "base" }: StackRevealProps
         {/* Opaque background panel, flush with the content top; the oversized
             fill inside translates for the slower-than-content parallax
             without exposing a gap. */}
-        <div className="absolute inset-0 -z-10 overflow-hidden rounded-t-[2rem] shadow-[0_-24px_50px_-24px_rgba(0,0,0,0.5)]">
+        <div className="absolute inset-0 -z-10 overflow-hidden rounded-t-[2rem] border-t border-border/70 shadow-[0_-24px_50px_-24px_rgba(0,0,0,0.5)]">
           <motion.div className="absolute -inset-y-[40%] inset-x-0" style={{ y: bgY }}>
             <div className="absolute inset-0 bg-background" />
-            {tone === "muted" && <div className="absolute inset-0 bg-muted/40" />}
+            {tone === "muted" && <div className="absolute inset-0 bg-muted/60" />}
             <div className="stack-reveal-pattern absolute inset-0" />
           </motion.div>
         </div>
