@@ -1,6 +1,10 @@
+"use client"
+
 import * as React from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { ExternalLink, Calendar, Users, FileText, Tag, BookOpen, ChevronDown, ChevronUp } from "lucide-react"
+import { Parallax } from "@/components/motion/parallax"
+import { scrollTo } from "@/lib/smooth-scroll"
 
 // ORCID Icon Component following official guidelines
 const ORCIDIcon = ({ className }: { className?: string }) => (
@@ -115,48 +119,25 @@ const publications: Publication[] = [
 ]
 
 export function ResearchSection() {
-  const [hoveredCard, setHoveredCard] = React.useState<number | null>(null)
-
-  const cardVariants = {
-    hidden: { opacity: 0, y: 50 },
-    visible: { 
-      opacity: 1, 
-      y: 0,
-      transition: { duration: 0.6, delay: 0.1 }
-    }
-  }
-  
   return (
-    <section id="research" className="py-20 bg-muted/30">
+    <section id="research" className="py-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
-        <motion.div
-          className="text-center mb-16"
-          initial={{ opacity: 0, y: 50 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          viewport={{ once: true }}
-        >
+        <Parallax speed={0.25} className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
             Research Publications
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
             Contributing to academic research in Artificial Intelligence of Things (AIoT), edge computing security, and intelligent surveillance systems
           </p>
-        </motion.div>
+        </Parallax>
 
         {/* Publications */}
         <div className="space-y-8">
           {publications.map((publication, index) => (
-            <motion.article
-              key={index}
-              className="group relative bg-card rounded-xl border border-border hover:border-primary/50 overflow-hidden transition-all duration-300"
-              variants={cardVariants}
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true }}
-              onMouseEnter={() => setHoveredCard(index)}
-              onMouseLeave={() => setHoveredCard(null)}
+            <Parallax key={index} speed={0.15}>
+            <article
+              className="group relative bg-card rounded-xl border border-border hover:border-primary/50 overflow-hidden transition-colors duration-300"
             >
               <div className="p-8">
                 {/* Title and DOI */}
@@ -186,41 +167,15 @@ export function ResearchSection() {
                     <Users className="w-5 h-5 text-primary" />
                     <h4 className="font-semibold text-foreground">Authors</h4>
                   </div>
-                  <motion.div 
-                    className="flex flex-wrap gap-3"
-                    initial="hidden"
-                    whileInView="visible"
-                    viewport={{ once: true }}
-                    variants={{
-                      hidden: {},
-                      visible: {
-                        transition: {
-                          staggerChildren: 0.08,
-                          delayChildren: 0.1
-                        }
-                      }
-                    }}
-                  >
+                  <div className="flex flex-wrap gap-3">
                     {publication.authors.map((author, authorIndex) => (
-                      <motion.div
+                      <div
                         key={authorIndex}
                         className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-colors ${
-                          author.isMainAuthor 
-                            ? 'bg-primary/10 text-primary border border-primary/20' 
+                          author.isMainAuthor
+                            ? 'bg-primary/10 text-primary border border-primary/20'
                             : 'bg-muted text-muted-foreground'
                         }`}
-                        variants={{
-                          hidden: { opacity: 0, y: 20, scale: 0.9 },
-                          visible: { 
-                            opacity: 1, 
-                            y: 0, 
-                            scale: 1,
-                            transition: { 
-                              duration: 0.5, 
-                              ease: [0.25, 0.46, 0.45, 0.94] 
-                            }
-                          }
-                        }}
                       >
                         <span className="font-medium">{author.name}</span>
                         {author.orcid && (
@@ -235,9 +190,9 @@ export function ResearchSection() {
                             <ORCIDIcon className="w-4 h-4" />
                           </a>
                         )}
-                      </motion.div>
+                      </div>
                     ))}
-                  </motion.div>
+                  </div>
                 </div>
 
               {/* Abstract */}
@@ -252,42 +207,16 @@ export function ResearchSection() {
                     <Tag className="w-5 h-5 text-primary" />
                     <h4 className="font-semibold text-foreground">Keywords</h4>
                   </div>
-                  <motion.div 
-                    className="flex flex-wrap gap-2"
-                    initial="hidden"
-                    whileInView="visible"
-                    viewport={{ once: true }}
-                    variants={{
-                      hidden: {},
-                      visible: {
-                        transition: {
-                          staggerChildren: 0.06,
-                          delayChildren: 0.2
-                        }
-                      }
-                    }}
-                  >
+                  <div className="flex flex-wrap gap-2">
                     {publication.keywords.map((keyword, keywordIndex) => (
-                      <motion.span
+                      <span
                         key={keywordIndex}
                         className="px-3 py-1 bg-secondary/20 text-secondary-foreground text-sm rounded-full border border-secondary/30 transition-colors"
-                        variants={{
-                          hidden: { opacity: 0, y: 15, scale: 0.8 },
-                          visible: { 
-                            opacity: 1, 
-                            y: 0, 
-                            scale: 1,
-                            transition: { 
-                              duration: 0.4, 
-                              ease: [0.25, 0.46, 0.45, 0.94] 
-                            }
-                          }
-                        }}
                       >
                         {keyword}
-                      </motion.span>
+                      </span>
                     ))}
-                  </motion.div>
+                  </div>
                 </div>
 
               {/* Publication Details and Links */}
@@ -323,22 +252,14 @@ export function ResearchSection() {
               </div>
 
               {/* Hover Overlay */}
-              <motion.div
-                className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
-                animate={{ opacity: hoveredCard === index ? 1 : 0 }}
-              />
-            </motion.article>
+              <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+            </article>
+            </Parallax>
           ))}
         </div>
 
         {/* Call to Action */}
-        <motion.div
-          className="text-center mt-12"
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          viewport={{ once: true }}
-        >
+        <Parallax speed={0.2} className="text-center mt-12">
           <p className="text-muted-foreground text-lg">
             Interested in collaboration or discussing research opportunities?
           </p>
@@ -346,11 +267,11 @@ export function ResearchSection() {
             className="mt-4 px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors font-medium"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            onClick={() => document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" })}
+            onClick={() => scrollTo("#contact")}
           >
             Get in Touch
           </motion.button>
-        </motion.div>
+        </Parallax>
       </div>
     </section>
   )

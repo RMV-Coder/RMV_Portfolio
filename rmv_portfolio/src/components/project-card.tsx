@@ -1,6 +1,5 @@
 "use client"
 
-import * as React from "react"
 import { motion } from "framer-motion"
 import { 
   ExternalLink, 
@@ -13,7 +12,7 @@ import {
   Zap
 } from "lucide-react"
 import type { EnhancedProject } from "@/app/interface/github"
-import { formatDate, getStatusColor, getCategoryColor } from "@/lib/github"
+import { formatDate, getStatusColor, getCategoryColor } from "@/lib/github-format"
 import { trackProjectClick } from "@/lib/analytics"
 
 interface ProjectCardProps {
@@ -22,52 +21,34 @@ interface ProjectCardProps {
   featured?: boolean
 }
 
-export function ProjectCard({ project, index, featured = false }: ProjectCardProps) {
-  const [isHovered, setIsHovered] = React.useState(false)
-
-  const cardVariants = {
-    hidden: { opacity: 0, y: 50 },
-    visible: { 
-      opacity: 1, 
-      y: 0,
-      transition: { duration: 0.6, delay: index * 0.1 }
-    }
-  }
-
+export function ProjectCard({ project, featured = false }: ProjectCardProps) {
   return (
-    <motion.div
-      className={`group relative bg-card rounded-xl border border-border hover:border-primary/50 overflow-hidden transition-all duration-300 ${
+    <div
+      className={`group relative bg-card rounded-xl border border-border hover:border-primary/50 overflow-hidden transition-colors duration-300 ${
         featured ? 'lg:col-span-2 xl:col-span-2' : ''
       }`}
-      variants={cardVariants}
-      initial="hidden"
-      whileInView="visible"
-      whileHover="hover"
-      viewport={{ once: true }}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
     >
-      {/* Featured Badge */}
-      {featured && (
-        <div className="absolute top-4 left-4 z-10">
-          <div className="flex items-center gap-1 bg-primary text-primary-foreground px-2 py-1 rounded-full text-xs font-medium">
-            <Zap className="w-3 h-3" />
-            Featured
-          </div>
-        </div>
-      )}
-
-      {/* Status Badge */}
-      {project.metadata?.status && (
-        <div className="absolute top-4 right-4 z-10">
-          <div className={`px-2 py-1 rounded-full text-xs font-medium capitalize ${getStatusColor(project.metadata.status)} bg-background/80 backdrop-blur-sm`}>
-            {project.metadata.status}
-          </div>
-        </div>
-      )}
-
       {/* Card Content */}
       <div className="p-6 h-full flex flex-col">
+        {/* Badges row — in normal flow so they never overlap the title/stats */}
+        {(featured || project.metadata?.status) && (
+          <div className="flex items-center justify-between gap-2 mb-4">
+            {featured ? (
+              <div className="flex items-center gap-1 bg-primary text-primary-foreground px-2 py-1 rounded-full text-xs font-medium">
+                <Zap className="w-3 h-3" />
+                Featured
+              </div>
+            ) : (
+              <span />
+            )}
+            {project.metadata?.status && (
+              <div className={`px-2 py-1 rounded-full text-xs font-medium capitalize ${getStatusColor(project.metadata.status)} bg-background/80`}>
+                {project.metadata.status}
+              </div>
+            )}
+          </div>
+        )}
+
         {/* Header */}
         <div className="flex items-start justify-between mb-4">
           <div className="flex-1 min-w-0">
@@ -205,10 +186,7 @@ export function ProjectCard({ project, index, featured = false }: ProjectCardPro
       </div>
 
       {/* Hover Overlay */}
-      <motion.div
-        className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
-        animate={{ opacity: isHovered ? 1 : 0 }}
-      />
-    </motion.div>
+      <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+    </div>
   )
 }

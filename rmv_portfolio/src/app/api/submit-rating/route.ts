@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import nodemailer from 'nodemailer';
 import prisma from '@/lib/prisma';
+import { escapeHtml } from '@/lib/utils';
 
 const RatingSchema = z.object({
   categories: z.object({
@@ -161,7 +162,7 @@ export async function POST(req: NextRequest) {
               ${data.feedback ? `
                 <div class="feedback-box">
                   <strong style="color: #92400e;">💬 Feedback:</strong>
-                  <p style="margin: 10px 0 0 0; color: #78350f;">${data.feedback}</p>
+                  <p style="margin: 10px 0 0 0; color: #78350f;">${escapeHtml(data.feedback)}</p>
                 </div>
               ` : ''}
 
@@ -174,15 +175,15 @@ export async function POST(req: NextRequest) {
                   </tr>
                   <tr>
                     <td>Location</td>
-                    <td>${city}, ${country}</td>
+                    <td>${escapeHtml(city)}, ${escapeHtml(country)}</td>
                   </tr>
                   <tr>
                     <td>User Agent</td>
-                    <td style="font-size: 12px; color: #6b7280;">${userAgent}</td>
+                    <td style="font-size: 12px; color: #6b7280;">${escapeHtml(userAgent)}</td>
                   </tr>
                   <tr>
                     <td>IP Address</td>
-                    <td>${ip}</td>
+                    <td>${escapeHtml(ip)}</td>
                   </tr>
                 </table>
               </div>
@@ -235,7 +236,7 @@ export async function POST(req: NextRequest) {
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { error: 'Invalid rating data', details: error.issues },
+        { error: 'Invalid rating data' },
         { status: 400 }
       );
     }

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import nodemailer from 'nodemailer'
+import { escapeHtml } from '@/lib/utils'
 
 // Rate limiting map
 const downloadTracking = new Map<string, number[]>()
@@ -8,18 +9,38 @@ const MAX_REQUESTS = 5
 
 function checkRateLimit(ip: string): boolean {
   const now = Date.now()
+
+  // Evict fully-expired entries so the map can't grow unbounded.
+  for (const [key, times] of downloadTracking) {
+    if (times.every(t => now - t >= RATE_LIMIT_WINDOW)) downloadTracking.delete(key)
+  }
+
   const requests = downloadTracking.get(ip) || []
-  
+
   // Filter out old requests
   const recentRequests = requests.filter(timestamp => now - timestamp < RATE_LIMIT_WINDOW)
-  
+
   if (recentRequests.length >= MAX_REQUESTS) {
     return false
   }
-  
+
   recentRequests.push(now)
   downloadTracking.set(ip, recentRequests)
   return true
+}
+
+// Only accept requests that originate from the site itself. A same-origin
+// browser fetch always sends the Origin header; a bare curl loop does not,
+// which blocks the trivial inbox-flood / SMTP-quota-exhaustion path.
+function isSameOrigin(request: NextRequest): boolean {
+  const origin = request.headers.get('origin')
+  const host = request.headers.get('host')
+  if (!origin || !host) return false
+  try {
+    return new URL(origin).host === host
+  } catch {
+    return false
+  }
 }
 
 function getDeviceInfo(userAgent: string): string {
@@ -48,9 +69,14 @@ function getBrowserInfo(userAgent: string): string {
 
 export async function POST(request: NextRequest) {
   try {
+    // Reject cross-origin / scripted requests that didn't come from the site.
+    if (!isSameOrigin(request)) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+    }
+
     // Rate limiting
     const ip = request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'unknown'
-    
+
     if (!checkRateLimit(ip)) {
       return NextResponse.json(
         { error: 'Too many requests' },
@@ -121,28 +147,28 @@ export async function POST(request: NextRequest) {
             </div>
             
             <div class="info-row">
-              <span class="label">🌍 Location:</span> ${city}, ${region}, ${country}
+              <span class="label">🌍 Location:</span> ${escapeHtml(city)}, ${escapeHtml(region)}, ${escapeHtml(country)}
             </div>
-            
+
             <div class="info-row">
-              <span class="label">💻 Device:</span> ${device}
+              <span class="label">💻 Device:</span> ${escapeHtml(device)}
             </div>
-            
+
             <div class="info-row">
-              <span class="label">🌐 Browser:</span> ${browser}
+              <span class="label">🌐 Browser:</span> ${escapeHtml(browser)}
             </div>
-            
+
             <div class="info-row">
-              <span class="label">🔗 IP Address:</span> ${ip}
+              <span class="label">🔗 IP Address:</span> ${escapeHtml(ip)}
             </div>
-            
+
             <div class="info-row">
-              <span class="label">🕒 Timezone:</span> ${timezone}
+              <span class="label">🕒 Timezone:</span> ${escapeHtml(timezone)}
             </div>
-            
+
             <div class="footer">
               <p>This is an automated notification from your portfolio website.</p>
-              <p><strong>User Agent:</strong> ${userAgent}</p>
+              <p><strong>User Agent:</strong> ${escapeHtml(userAgent)}</p>
             </div>
           </div>
         </div>

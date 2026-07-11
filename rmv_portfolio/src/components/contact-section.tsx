@@ -2,6 +2,7 @@
 
 import * as React from "react"
 import { motion } from "framer-motion"
+import { Parallax } from "@/components/motion/parallax"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { FiMail, FiPhone, FiMapPin, FiSend, FiLoader, FiCheck, FiAlertCircle } from "react-icons/fi"
@@ -76,29 +77,17 @@ export function ContactSection() {
   return (
     <section id="contact" className="py-20 relative">
       <div className="container mx-auto px-4">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          viewport={{ once: true }}
-          className="text-center mb-16"
-        >
+        <Parallax speed={0.25} className="text-center mb-16">
           <h2 className="text-4xl font-bold mb-4">Get In Touch</h2>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Have a project in mind or just want to say hello? I&apos;d love to hear from you. 
+            Have a project in mind or just want to say hello? I&apos;d love to hear from you.
             Let&apos;s create something amazing together!
           </p>
-        </motion.div>
+        </Parallax>
 
         <div className="grid lg:grid-cols-2 gap-16 max-w-6xl mx-auto">
           {/* Contact Info */}
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            viewport={{ once: true }}
-            className="space-y-8"
-          >
+          <Parallax speed={0.15} className="space-y-8">
             <div>
               <h3 className="text-2xl font-semibold mb-6">Let&apos;s Connect</h3>
               <p className="text-muted-foreground mb-8">
@@ -157,19 +146,15 @@ export function ContactSection() {
                   { icon: FaGithub, href: "https://github.com/RMV-Coder", label: "GitHub" },
                   { icon: FaLinkedin, href: "https://linkedin.com/in/raymond-mv002/", label: "LinkedIn" },
                   { icon: FaTwitter, href: "https://twitter.com/mond_valdepenas", label: "Twitter" },
-                ].map((social, index) => (
+                ].map((social) => (
                   <motion.a
                     key={social.label}
                     href={social.href}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="p-3 rounded-full bg-card border hover:border-primary hover:shadow-md transition-all duration-300"
+                    className="p-3 rounded-full bg-card border hover:border-primary hover:shadow-md transition-[border-color,box-shadow] duration-300"
                     whileHover={{ scale: 1.1, y: -2 }}
                     whileTap={{ scale: 0.95 }}
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.6, delay: 0.4 + index * 0.1 }}
-                    viewport={{ once: true }}
                     aria-label={social.label}
                   >
                     <social.icon className="w-5 h-5 text-muted-foreground hover:text-primary transition-colors" />
@@ -177,16 +162,10 @@ export function ContactSection() {
                 ))}
               </div>
             </div>
-          </motion.div>
+          </Parallax>
 
           {/* Contact Form */}
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6, delay: 0.3 }}
-            viewport={{ once: true }}
-            className="bg-card border rounded-xl p-8 shadow-lg"
-          >
+          <Parallax speed={0.35} className="bg-card border rounded-xl p-8 shadow-lg">
             <h3 className="text-2xl font-semibold mb-6">Send a Message</h3>
             
             {/* Form Status Messages */}
@@ -319,7 +298,7 @@ export function ContactSection() {
                 )}
               </motion.button>
             </form>
-          </motion.div>
+          </Parallax>
         </div>
       </div>
     </section>

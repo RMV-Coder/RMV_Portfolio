@@ -2,6 +2,7 @@
 
 import * as React from "react"
 import { ChevronUp } from "lucide-react"
+import { scrollTo } from "@/lib/smooth-scroll"
 
 export function BackToTop() {
   const [isVisible, setIsVisible] = React.useState(false)
@@ -20,10 +21,7 @@ export function BackToTop() {
   }, [])
 
   const scrollToTop = () => {
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth",
-    })
+    scrollTo(0)
   }
 
   if (!isVisible) {

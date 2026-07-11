@@ -1,10 +1,9 @@
 "use client"
 
 import * as React from "react"
-import { motion } from "framer-motion"
 import useSWR from "swr"
 import { Search, Github, Loader2, AlertCircle, RefreshCw, Filter } from "lucide-react"
-import { githubService } from "@/lib/github"
+import { Parallax } from "@/components/motion/parallax"
 import { ProjectCard } from "@/components/project-card"
 import { Button } from "@/components/ui/button"
 import {
@@ -17,11 +16,20 @@ import {
 } from "@/components/ui/dropdown-menu"
 import type { EnhancedProject } from "@/app/interface/github"
 
-const fetcher = () => githubService.getEnhancedProjects()
+// Fetch through the server-side proxy — one cached upstream call serves all
+// visitors, so browser-side GitHub rate limits can't break this section.
+const fetcher = async (url: string): Promise<EnhancedProject[]> => {
+  const res = await fetch(url)
+  if (!res.ok) {
+    const body = (await res.json().catch(() => ({}))) as { error?: string }
+    throw new Error(body.error || `Failed to load projects (${res.status})`)
+  }
+  return res.json()
+}
 
 export function ProjectsSection() {
   const { data: projects, error, isLoading, mutate } = useSWR<EnhancedProject[]>(
-    'github-projects',
+    '/api/projects',
     fetcher,
     {
       revalidateOnFocus: false,
@@ -96,22 +104,18 @@ export function ProjectsSection() {
   const regularProjects = filteredProjects.filter(p => !p.metadata?.featured)
 
   return (
-    <section id="projects" className="py-20 bg-background">
+    <section id="projects" className="py-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
-        <motion.div
-          className="text-center mb-12"
-          initial={{ opacity: 0, y: 50 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          viewport={{ once: true }}
-        >
-          <h2 className="p-4 text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-            Featured Projects
-          </h2>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-8">
-            A collection of my recent work, showcasing various technologies and problem-solving approaches
-          </p>
+        <div className="text-center mb-12">
+          <Parallax speed={0.25}>
+            <h2 className="p-4 text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+              Featured Projects
+            </h2>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-8">
+              A collection of my recent work, showcasing various technologies and problem-solving approaches
+            </p>
+          </Parallax>
 
           {/* Search and Filter Controls */}
           <div className="flex flex-col sm:flex-row gap-4 items-center justify-center max-w-4xl mx-auto">
@@ -202,7 +206,7 @@ export function ProjectsSection() {
           </div>
 
 
-        </motion.div>
+        </div>
 
         {/* Content */}
         {isLoading ? (
@@ -288,13 +292,7 @@ export function ProjectsSection() {
             )}
 
             {/* GitHub Link */}
-            <motion.div
-              className="text-center mt-12"
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-              viewport={{ once: true }}
-            >
+            <Parallax speed={0.2} className="text-center mt-12">
               <a
                 href="https://github.com/RMV-Coder"
                 target="_blank"
@@ -304,7 +302,7 @@ export function ProjectsSection() {
                 <Github className="w-5 h-5" />
                 View all projects on GitHub
               </a>
-            </motion.div>
+            </Parallax>
           </>
         )}
       </div>

@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import dynamic from "next/dynamic"
-import { motion } from "framer-motion"
+import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion"
 import TypographyLead from "@/components/typography/lead"
 import TypographyP from "@/components/typography/paragraph"
 import { Navigation } from "@/components/navigation"
@@ -12,6 +12,12 @@ import { AnimatedBackground } from "@/components/animated-background"
 import { SocialLinks } from "@/components/social-links"
 import { ScrollIndicator } from "@/components/scroll-indicator"
 import { PerformanceMonitor } from "@/components/performance-monitor"
+import { CustomCursor } from "@/components/custom-cursor"
+import { InteractiveBackground } from "@/components/interactive-background"
+import { SmoothScroll } from "@/components/smooth-scroll"
+import { scrollTo } from "@/lib/smooth-scroll"
+import { StackReveal } from "@/components/motion/stack-reveal"
+import { Magnetic } from "@/components/motion/magnetic"
 
 // Dynamic imports for better code splitting
 const SkillsSection = dynamic(() => import("@/components/skills-section").then(mod => ({ default: mod.SkillsSection })), {
@@ -40,17 +46,40 @@ const ResearchSection = dynamic(() => import("@/components/research-section").th
 })
 
 export default function Home() {
+  const heroRef = React.useRef<HTMLElement>(null)
+  const shouldReduceMotion = useReducedMotion()
+  const { scrollYProgress } = useScroll({
+    target: heroRef,
+    offset: ["start start", "end start"],
+  })
+  // Hero content lags the scroll (translates up slower); the background lags
+  // even more for a layered depth effect. Disabled under reduced motion.
+  // Hero depth is purely positional (no shrink): content lags, background lags
+  // more, so About slides up and covers it via z-index.
+  const contentY = useTransform(scrollYProgress, [0, 1], [0, shouldReduceMotion ? 0 : 90])
+  const bgY = useTransform(scrollYProgress, [0, 1], [0, shouldReduceMotion ? 0 : 200])
+
   return (
     <div className="min-h-screen">
+      <SmoothScroll />
+      <InteractiveBackground />
+      <CustomCursor />
       <PerformanceMonitor />
       <Navigation />
-      
+
       {/* Hero Section */}
-      <section id="home" className="relative min-h-screen flex items-center justify-center overflow-hidden">
-        <AnimatedBackground />
-        
+      <section
+        ref={heroRef}
+        id="home"
+        className="relative isolate z-0 min-h-screen flex items-center justify-center overflow-hidden"
+      >
+        <motion.div className="absolute inset-0" style={{ y: bgY }}>
+          <AnimatedBackground />
+        </motion.div>
+
+        <motion.div style={{ y: contentY }} className="relative z-10">
         <motion.div
-          className="relative z-10 text-center px-4 max-w-4xl mx-auto"
+          className="text-center px-4 max-w-4xl mx-auto"
           initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1 }}
@@ -102,45 +131,59 @@ export default function Home() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 1.8 }}
           >
-            <motion.button 
-              className="px-8 py-3 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors font-medium"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => document.getElementById("projects")?.scrollIntoView({ behavior: "smooth" })}
-            >
-              View Projects
-            </motion.button>
-            <motion.button 
-              className="px-8 py-3 border border-primary text-primary rounded-md hover:bg-primary hover:text-primary-foreground transition-colors font-medium"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" })}
-            >
-              Contact Me
-            </motion.button>
+            <Magnetic>
+              <motion.button
+                className="px-8 py-3 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors font-medium"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => scrollTo("#projects")}
+                data-cursor="View"
+              >
+                View Projects
+              </motion.button>
+            </Magnetic>
+            <Magnetic>
+              <motion.button
+                className="px-8 py-3 border border-primary text-primary rounded-md hover:bg-primary hover:text-primary-foreground transition-colors font-medium"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => scrollTo("#contact")}
+                data-cursor="Say hi"
+              >
+                Contact Me
+              </motion.button>
+            </Magnetic>
           </motion.div>
           
           <SocialLinks />
         </motion.div>
-        
+        </motion.div>
+
         <ScrollIndicator />
       </section>
 
-      {/* About Section */}
-      <AboutSection />
+      {/* Stacked parallax layers — each covers the previous by z-index, clamps
+          on exit, and its background lags more than its content. */}
+      <StackReveal index={1} tone="muted">
+        <AboutSection />
+      </StackReveal>
 
-      {/* Skills Section */}
-      <SkillsSection />
+      <StackReveal index={2} tone="base">
+        <SkillsSection />
+      </StackReveal>
 
-      {/* Research Section */}
-      <ResearchSection />
+      <StackReveal index={3} tone="muted">
+        <ResearchSection />
+      </StackReveal>
 
-      {/* Projects Section */}
-      <ProjectsSection />
-      
-      {/* Contact Section */}
-      <ContactSection />
-      
+      <StackReveal index={4} tone="base">
+        <ProjectsSection />
+      </StackReveal>
+
+      <StackReveal index={5} tone="muted">
+        <ContactSection />
+      </StackReveal>
+
       <BackToTop />
     </div>
   )
