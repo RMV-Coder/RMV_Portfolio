@@ -53,19 +53,42 @@ async function githubFetch<T>(path: string): Promise<T> {
 
 // Project metadata (customize for your projects)
 const PROJECT_METADATA: Record<string, ProjectMetadata> = {
-  'RMV_Portfolio': {
+  'OmniGraph': {
     id: 1,
     featured: true,
-    status: 'ongoing',
-    category: 'personal',
+    status: 'maintained',
+    category: 'open-source',
     techStack: {
-      frontend: ['Next.js', 'React', 'TypeScript', 'Tailwind CSS', 'Framer Motion'],
-      backend: ['Node.js', 'Nodemailer'],
+      frontend: [],
+      backend: ['Node.js', 'TypeScript'],
       database: [],
-      tools: ['Vercel', 'GitHub', 'VS Code']
+      tools: ['npm', 'AST Parsing']
     },
+    demoUrl: 'https://www.npmjs.com/package/@zoldia/omnigraph',
     priority: 1,
-    highlights: ['Responsive Design', 'Dark/Light Theme', 'Smooth Animations', 'GitHub Integration']
+    highlights: [
+      'Published on npm as @zoldia/omnigraph',
+      'Multi-language AST analysis',
+      'Interactive dependency graph'
+    ]
+  },
+  'LocalPass': {
+    id: 2,
+    featured: true,
+    status: 'ongoing',
+    category: 'open-source',
+    techStack: {
+      frontend: ['Svelte', 'TypeScript'],
+      backend: ['Rust'],
+      database: [],
+      tools: ['GitHub']
+    },
+    priority: 2,
+    highlights: [
+      'Fully local — no cloud',
+      'Password & secrets manager',
+      'Developer .env workflow focus'
+    ]
   },
   // Add more project metadata as needed
 }
