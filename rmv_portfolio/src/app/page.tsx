@@ -16,6 +16,7 @@ import { CustomCursor } from "@/components/custom-cursor"
 import { InteractiveBackground } from "@/components/interactive-background"
 import { SmoothScroll } from "@/components/smooth-scroll"
 import { scrollTo } from "@/lib/smooth-scroll"
+import { StackReveal } from "@/components/motion/stack-reveal"
 
 // Dynamic imports for better code splitting
 const SkillsSection = dynamic(() => import("@/components/skills-section").then(mod => ({ default: mod.SkillsSection })), {
@@ -54,6 +55,9 @@ export default function Home() {
   // even more for a layered depth effect. Disabled under reduced motion.
   const contentY = useTransform(scrollYProgress, [0, 1], [0, shouldReduceMotion ? 0 : 90])
   const bgY = useTransform(scrollYProgress, [0, 1], [0, shouldReduceMotion ? 0 : 200])
+  // Hero recedes as the next section rises over it: gentle scale-down + a scrim.
+  const heroScale = useTransform(scrollYProgress, [0, 1], [1, shouldReduceMotion ? 1 : 0.94])
+  const heroScrim = useTransform(scrollYProgress, [0, 1], [0, shouldReduceMotion ? 0 : 0.5])
 
   return (
     <div className="min-h-screen">
@@ -73,7 +77,7 @@ export default function Home() {
           <AnimatedBackground />
         </motion.div>
 
-        <motion.div style={{ y: contentY }} className="relative z-10">
+        <motion.div style={{ y: contentY, scale: heroScale }} className="relative z-10">
         <motion.div
           className="text-center px-4 max-w-4xl mx-auto"
           initial={{ opacity: 0, y: 50 }}
@@ -149,24 +153,37 @@ export default function Home() {
         </motion.div>
         </motion.div>
 
+        {/* Recede scrim — hero sinks into shadow as About rises over it */}
+        <motion.div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 bg-black z-20"
+          style={{ opacity: heroScrim }}
+        />
+
         <ScrollIndicator />
       </section>
 
-      {/* About Section */}
-      <AboutSection />
+      {/* Stacked, layered sections — each rises over and covers the previous */}
+      <StackReveal index={1}>
+        <AboutSection />
+      </StackReveal>
 
-      {/* Skills Section */}
-      <SkillsSection />
+      <StackReveal index={2}>
+        <SkillsSection />
+      </StackReveal>
 
-      {/* Research Section */}
-      <ResearchSection />
+      <StackReveal index={3}>
+        <ResearchSection />
+      </StackReveal>
 
-      {/* Projects Section */}
-      <ProjectsSection />
-      
-      {/* Contact Section */}
-      <ContactSection />
-      
+      <StackReveal index={4}>
+        <ProjectsSection />
+      </StackReveal>
+
+      <StackReveal index={5}>
+        <ContactSection />
+      </StackReveal>
+
       <BackToTop />
     </div>
   )
