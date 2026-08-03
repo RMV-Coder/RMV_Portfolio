@@ -18,6 +18,7 @@ import { SmoothScroll } from "@/components/smooth-scroll"
 import { scrollTo } from "@/lib/smooth-scroll"
 import { StackReveal } from "@/components/motion/stack-reveal"
 import { Magnetic } from "@/components/motion/magnetic"
+import { homePageGraph } from "@/lib/structured-data"
 
 // Dynamic imports for better code splitting
 const SkillsSection = dynamic(() => import("@/components/skills-section").then(mod => ({ default: mod.SkillsSection })), {
@@ -30,9 +31,13 @@ const AboutSection = dynamic(() => import("@/components/about-section").then(mod
   ssr: true
 })
 
+// The repo list is fetched client-side via SWR, but the section itself renders
+// on the server. With ssr:false the entire section — heading, description, and
+// the link to GitHub — was absent from the served HTML, so crawlers saw no
+// projects section at all.
 const ProjectsSection = dynamic(() => import("@/components/projects-section").then(mod => ({ default: mod.ProjectsSection })), {
   loading: () => <div className="py-20 flex items-center justify-center"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div></div>,
-  ssr: false // This has GitHub API calls, so we can disable SSR
+  ssr: true
 })
 
 const ContactSection = dynamic(() => import("@/components/contact-section").then(mod => ({ default: mod.ContactSection })), {
@@ -61,6 +66,18 @@ export default function Home() {
 
   return (
     <div className="min-h-screen">
+      {/*
+        ProfilePage node for this URL specifically — it names Raymond as the
+        page's `mainEntity`, which is the question an AI overview is answering
+        when someone searches his name. Emitted here rather than in the layout
+        so it does not follow the visitor onto /research, which describes a
+        different resource.
+      */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(homePageGraph) }}
+      />
+
       <SmoothScroll />
       <InteractiveBackground />
       <CustomCursor />
@@ -89,7 +106,7 @@ export default function Home() {
             animate={{ opacity: 1 }}
             transition={{ duration: 0.8, delay: 0.3 }}
           >
-            <TypographyLead text={"RAYMOND VALDEPEÑAS,"} />
+            <TypographyLead as="h1" text={"RAYMOND VALDEPEÑAS,"} />
           </motion.div>
           
           <motion.div

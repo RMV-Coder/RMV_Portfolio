@@ -1,10 +1,12 @@
 "use client"
 
 import * as React from "react"
+import Link from "next/link"
 import { motion, AnimatePresence } from "framer-motion"
 import { ExternalLink, Calendar, Users, FileText, Tag, BookOpen, ChevronDown, ChevronUp } from "lucide-react"
 import { Parallax } from "@/components/motion/parallax"
 import { scrollTo } from "@/lib/smooth-scroll"
+import { PUBLICATION } from "@/lib/site"
 
 // ORCID Icon Component following official guidelines
 const ORCIDIcon = ({ className }: { className?: string }) => (
@@ -77,46 +79,13 @@ const ExpandableAbstract = ({ abstract }: { abstract: string }) => {
   )
 }
 
-interface Publication {
-  title: string
-  authors: {
-    name: string
-    orcid?: string
-    isMainAuthor?: boolean
-  }[]
-  abstract: string
-  doi: string
-  keywords: string[]
-  publisher: string
-  journal: string
-  pages: string
-  datePublished: string
-  year: number
-}
-
-const publications: Publication[] = [
-  {
-    title: "My.BoardHub: Development of a Single-Board Computer-Based Security System Using Artificial Intelligence of Things for Boarding Houses",
-    authors: [
-      { name: "Raymond M. Valdepeñas", orcid: "0009-0008-8680-3694", isMainAuthor: true }, // Add your ORCID manually
-      { name: "Marie Glo C. Generalao", orcid: "0009-0001-3964-4570" }, // Add ORCID manually if available
-      { name: "Selena B. Suario", orcid: "0009-0002-8525-5354" }, // Add ORCID manually if available
-      { name: "Apple Rose B. Alce", orcid: "0000-0001-6672-8772" }, // Add ORCID manually if available
-      { name: "Paul Rodolf P. Castor", orcid: "0000-0001-5609-5334" }, // Add ORCID manually if available
-      { name: "Jomari Francis B. Villanueva", orcid: "0009-0000-6515-2169" }, // Add ORCID manually if available
-      { name: "Leah A. Alindayo", orcid: "0009-0007-5990-971X" }, // Add ORCID manually if available
-      { name: "Ernesto E. Empig", orcid: "0000-0001-8044-3124" } // Add ORCID manually if available
-    ],
-    abstract: "Boarding houses near universities in the Philippines face growing security challenges inadequately met by traditional methods. This study details the development, short implementation, and technical performance evaluation of my.BoardHub, a prototype Artificial Intelligence of Things (AIoT) system designed to enhance safety through facial recognition. The system utilizes a Raspberry Pi 5 edge device, Multi-Task Cascaded Convolutional Networks (MTCNN) for real-time face detection, and a fine-tuned Inception-ResNet-V1 model for facial recognition. Development followed a layered architecture and Rapid Application Development (RAD) methodology. During a pilot deployment, technical performance was evaluated via system logs, hardware stress tests, network latency measurements, and AI model benchmarks. The system achieved a high technical accuracy (90.88% face detection accuracy; 94.28% facial recognition F1-score) and a near real-time processing with an average of 7.6 FPS at 480p. Network performance met responsiveness targets. Ethical considerations were addressed through informed consent, technical data anonymization, and implemented security measures, although moderate user privacy concerns persisted, highlighting the need for clearer data-handling communication and governance. my.BoardHub demonstrates the technical feasibility of deploying edge AIoT for enhanced boarding house security. Future work should prioritize edge optimization, adaptive algorithms, privacy-preserving techniques, and longer-term technical evaluations.",
-    doi: "10.1007/978-3-032-06634-3_6",
-    keywords: ["AIoT", "Security Systems", "Boarding Houses", "Facial Recognition", "MTCNN", "Inception-ResNet"],
-    publisher: "Springer, Cham",
-    journal: "Novel and Intelligent Digital Systems: Proceedings of the 5th International Conference (NiDS 2025)",
-    pages: "59–70",
-    datePublished: "2025-10-03",
-    year: 2025
-  }
-]
+/**
+ * Sourced from `@/lib/site` so the rendered citation, the JSON-LD, the /research
+ * page, and the citation meta tags cannot disagree. The publication data used
+ * to live here as a second copy — and a citation that contradicts itself across
+ * a site is exactly what makes a crawler distrust all of it.
+ */
+const publications = [{ ...PUBLICATION, journal: PUBLICATION.bookTitle }]
 
 export function ResearchSection() {
   return (
@@ -129,6 +98,27 @@ export function ResearchSection() {
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
             Contributing to academic research in Artificial Intelligence of Things (AIoT), edge computing security, and intelligent surveillance systems
+          </p>
+          {/*
+            Stated plainly, and stated negatively, because this is the sentence
+            that fixes the wrong-citation problem. "Here is my paper" lets an
+            answer engine append others it believes are also mine; "this is the
+            only one" gives it grounds to reject a mismatched candidate. The
+            ORCID is inline so the claim is checkable against an authority
+            record rather than taken on the site's word.
+          */}
+          <p className="text-sm text-muted-foreground/80 max-w-2xl mx-auto mt-4">
+            {PUBLICATION.authors[0].name} (ORCID{" "}
+            <a
+              href={`https://orcid.org/${PUBLICATION.authors[0].orcid}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-primary hover:underline"
+            >
+              {PUBLICATION.authors[0].orcid}
+            </a>
+            ) has one peer-reviewed publication, listed below. Any other paper
+            attributed to this name is by a different author.
           </p>
         </Parallax>
 
@@ -235,6 +225,12 @@ export function ResearchSection() {
                     </div>
                   </div>
                   <div className="flex flex-wrap gap-3">
+                    {/*
+                      The DOI is written out rather than hidden behind link
+                      text. A crawler reading "View Publication" learns nothing
+                      about which publication; a crawler reading the DOI can
+                      resolve it unambiguously.
+                    */}
                     <motion.a
                       href={`https://doi.org/${publication.doi}`}
                       target="_blank"
@@ -242,10 +238,18 @@ export function ResearchSection() {
                       className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors text-sm font-medium"
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
+                      aria-label={`Read "${publication.title}" on SpringerLink, DOI ${publication.doi}`}
                     >
                       <ExternalLink className="w-4 h-4" />
-                      View Publication
+                      DOI: {publication.doi}
                     </motion.a>
+                    <Link
+                      href="/research"
+                      className="inline-flex items-center gap-2 px-4 py-2 border border-border rounded-lg hover:border-primary hover:text-primary transition-colors text-sm font-medium"
+                    >
+                      <FileText className="w-4 h-4" />
+                      Full citation &amp; BibTeX
+                    </Link>
                   </div>
                   </div>
                 </div>
