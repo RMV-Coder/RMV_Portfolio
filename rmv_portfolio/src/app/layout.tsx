@@ -7,7 +7,8 @@ import { Footer } from "@/components/footer";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import { GoogleAnalytics } from '@next/third-parties/google';
-import { structuredData, websiteStructuredData, professionalServiceStructuredData } from "@/lib/structured-data";
+import { identityGraph, professionalServiceStructuredData } from "@/lib/structured-data";
+import { PERSON, SITE, SITE_URL } from "@/lib/site";
 
 const montserrat = Montserrat({
   variable: "--font-montserrat",
@@ -26,30 +27,18 @@ const montserrat = Montserrat({
 // });
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://raymondvaldepenas-dev.vercel.app'),
+  metadataBase: new URL(SITE_URL),
   title: {
-    default: "Raymond Valdepeñas - Full Stack Developer",
-    template: "%s | Raymond Valdepeñas"
+    // Includes the researcher role, because "who is this person" is the query
+    // being answered when someone searches the name.
+    default: SITE.title,
+    template: `%s | ${PERSON.name}`,
   },
-  description: "Passionate Full Stack Developer from Tangub City, Philippines. Specializing in React, Next.js, Node.js, and modern web technologies. Let's build something amazing together!",
-  keywords: [
-    "Raymond Valdepeñas",
-    "Full Stack Developer",
-    "React Developer",
-    "Next.js Developer",
-    "Node.js Developer",
-    "JavaScript",
-    "TypeScript",
-    "Web Developer",
-    "Philippines",
-    "Tangub City",
-    "Frontend Developer",
-    "Backend Developer",
-    "Software Engineer"
-  ],
-  authors: [{ name: "Raymond Valdepeñas" }],
-  creator: "Raymond Valdepeñas",
-  publisher: "Raymond Valdepeñas",
+  description: SITE.description,
+  applicationName: SITE.name,
+  authors: [{ name: PERSON.name, url: SITE_URL }],
+  creator: PERSON.name,
+  publisher: PERSON.name,
   robots: {
     index: true,
     follow: true,
@@ -62,30 +51,25 @@ export const metadata: Metadata = {
     },
   },
   openGraph: {
-    type: "website",
-    locale: "en_US",
-    url: "https://raymondvaldepenas-dev.vercel.app",
-    title: "Raymond Valdepeñas - Full Stack Developer",
-    description: "Passionate Full Stack Developer from Tangub City, Philippines. Specializing in React, Next.js, Node.js, and modern web technologies.",
-    siteName: "Raymond Valdepeñas Portfolio",
-    images: [
-      {
-        url: "/og-image.png",
-        width: 1200,
-        height: 630,
-        alt: "Raymond Valdepeñas - Full Stack Developer",
-      },
-    ],
+    type: "profile",
+    firstName: PERSON.givenName,
+    lastName: PERSON.familyName,
+    locale: SITE.locale,
+    url: SITE_URL,
+    title: SITE.title,
+    description: SITE.description,
+    siteName: SITE.name,
+    // Images come from the app/opengraph-image.tsx file convention, so the
+    // reference cannot go stale the way the hand-written /og-image.png did.
   },
   twitter: {
     card: "summary_large_image",
-    title: "Raymond Valdepeñas - Full Stack Developer",
-    description: "Passionate Full Stack Developer from Tangub City, Philippines. Specializing in React, Next.js, Node.js, and modern web technologies.",
-    images: ["/og-image.png"],
+    title: SITE.title,
+    description: SITE.description,
     creator: "@mond_valdepenas",
   },
   alternates: {
-    canonical: "https://raymondvaldepenas-dev.vercel.app",
+    canonical: SITE_URL,
   },
   icons: {
     icon: [
@@ -114,16 +98,17 @@ export default function RootLayout({
       <head>
         <meta name="referrer" content="strict-origin-when-cross-origin" />
 
+        {/*
+          Site-wide identity as one connected @graph — person, site, and
+          publication, linked by @id. This replaces three standalone blocks that
+          each declared their own unlinked copy of the Person, which read as
+          several vaguely-described entities rather than one well-described one.
+          Page-level nodes are emitted by the pages themselves.
+        */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
-            __html: JSON.stringify(structuredData),
-          }}
-        />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify(websiteStructuredData),
+            __html: JSON.stringify(identityGraph),
           }}
         />
         <script
