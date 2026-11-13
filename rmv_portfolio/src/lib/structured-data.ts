@@ -42,6 +42,11 @@ const personNode = {
   givenName: PERSON.givenName,
   familyName: PERSON.familyName,
   jobTitle: PERSON.jobTitle,
+  worksFor: {
+    '@type': 'Organization',
+    name: PERSON.employer.name,
+    url: PERSON.employer.url,
+  },
   description: SITE.description,
   url: SITE_URL,
   mainEntityOfPage: { '@id': WEBPAGE_ID },
@@ -51,7 +56,6 @@ const personNode = {
     caption: `${PERSON.name} — ${PERSON.jobTitle}`,
   },
   email: `mailto:${PERSON.email}`,
-  telephone: PERSON.telephone,
   address: {
     '@type': 'PostalAddress',
     addressLocality: PERSON.locality,
@@ -89,8 +93,6 @@ const personNode = {
     'Internet of Things',
     'Raspberry Pi',
   ],
-  /** Authorship stated on the Person node as well as the article node. */
-  author: { '@id': PUBLICATION_ID },
   nationality: { '@type': 'Country', name: PERSON.country },
 }
 

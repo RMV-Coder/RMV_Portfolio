@@ -21,6 +21,12 @@ const nextConfig: NextConfig = {
   // Turbopack configuration for Next.js 16
   turbopack: {},
 
+  // The résumé PDF lives outside public/ and is read from disk by the
+  // download route, so it has to be named here to ship with that function.
+  outputFileTracingIncludes: {
+    '/api/resume/*': ['./private/resume.pdf'],
+  },
+
   // Performance optimizations
   compress: true,
   poweredByHeader: false,
@@ -76,6 +82,16 @@ const nextConfig: NextConfig = {
           },
         ],
       },
+      // Private areas: never indexed, never cached, and no referrer — a
+      // résumé link's token must not leak to the next site visited.
+      ...['/admin/:path*', '/resume/:path*', '/api/resume/:path*'].map((source) => ({
+        source,
+        headers: [
+          { key: 'X-Robots-Tag', value: 'noindex, nofollow, noarchive' },
+          { key: 'Referrer-Policy', value: 'no-referrer' },
+          { key: 'Cache-Control', value: 'private, no-store' },
+        ],
+      })),
       {
         source: '/1-3-01.jpeg',
         headers: [

@@ -84,17 +84,60 @@ export function RatingModal({ open, onOpenChange }: RatingModalProps) {
     }
   }
 
+  /**
+   * Each category is a radio group: one Tab stop (the chosen star, or the first),
+   * arrow keys move between stars and choose, as native radio buttons do.
+   */
+  const handleStarKeyDown = (event: React.KeyboardEvent<HTMLDivElement>, category: string, currentRating: number) => {
+    const from = currentRating || 1
+    let next: number
+    switch (event.key) {
+      case 'ArrowRight':
+      case 'ArrowUp':
+        next = from === 5 ? 1 : from + 1
+        break
+      case 'ArrowLeft':
+      case 'ArrowDown':
+        next = from === 1 ? 5 : from - 1
+        break
+      case 'Home':
+        next = 1
+        break
+      case 'End':
+        next = 5
+        break
+      default:
+        return
+    }
+    event.preventDefault()
+    handleRating(category, next)
+    event.currentTarget.querySelectorAll<HTMLButtonElement>('[role="radio"]')[next - 1]?.focus()
+  }
+
   const renderStars = (category: string, currentRating: number) => {
     return (
-      <div className="flex gap-1">
+      <div
+        role="radiogroup"
+        aria-labelledby={`rating-${category}-label`}
+        aria-describedby={`rating-${category}-description`}
+        // Submit stays disabled until the overall rating is chosen.
+        aria-required={category === 'overall' || undefined}
+        onKeyDown={(event) => handleStarKeyDown(event, category, currentRating)}
+        className="flex gap-1"
+      >
         {[1, 2, 3, 4, 5].map((star) => {
           const isActive = hoveredCategory === category && hoveredStar >= star
           const isFilled = currentRating >= star || isActive
+          const isChecked = currentRating === star
 
           return (
             <button
               key={star}
               type="button"
+              role="radio"
+              aria-checked={isChecked}
+              aria-label={`${star} out of 5`}
+              tabIndex={isChecked || (currentRating === 0 && star === 1) ? 0 : -1}
               onClick={() => handleRating(category, star)}
               onMouseEnter={() => {
                 setHoveredCategory(category)
@@ -107,6 +150,7 @@ export function RatingModal({ open, onOpenChange }: RatingModalProps) {
               className="transition-transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded"
             >
               <Star
+                aria-hidden="true"
                 className={`w-6 h-6 transition-colors ${
                   isFilled
                     ? 'fill-yellow-400 text-yellow-400'
@@ -124,9 +168,9 @@ export function RatingModal({ open, onOpenChange }: RatingModalProps) {
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="text-2xl">Rate My Portfolio</DialogTitle>
+          <DialogTitle className="text-2xl">Rate this portfolio</DialogTitle>
           <DialogDescription>
-            Your feedback helps me improve! Rate different aspects and share your thoughts.
+            Your feedback helps me improve it. Rate any of these, and add a note if you like.
           </DialogDescription>
         </DialogHeader>
 
@@ -147,12 +191,12 @@ export function RatingModal({ open, onOpenChange }: RatingModalProps) {
                 />
               </svg>
             </div>
-            <h3 className="text-lg font-semibold mb-2">Thank You!</h3>
+            <h3 className="text-lg font-semibold mb-2">Thank you</h3>
             <p className="text-muted-foreground">
-              Your rating has been submitted successfully. I appreciate your feedback!
+              Your rating was sent. I appreciate it.
             </p>
             <p className="mt-6 text-sm text-muted-foreground">
-              Enjoyed the portfolio? A star on GitHub means a lot!
+              Enjoyed it? A star on GitHub helps.
             </p>
             <div className="mt-3 flex flex-col sm:flex-row items-center justify-center gap-2">
               <Button asChild>
@@ -182,8 +226,8 @@ export function RatingModal({ open, onOpenChange }: RatingModalProps) {
                 <div key={category.name} className="space-y-2">
                   <div className="flex items-start justify-between">
                     <div>
-                      <h4 className="font-medium text-sm">{category.label}</h4>
-                      <p className="text-xs text-muted-foreground">{category.description}</p>
+                      <h3 id={`rating-${category.name}-label`} className="font-medium text-sm">{category.label}</h3>
+                      <p id={`rating-${category.name}-description`} className="text-xs text-muted-foreground">{category.description}</p>
                     </div>
                     {renderStars(category.name, ratings[category.name as keyof typeof ratings])}
                   </div>
@@ -192,7 +236,7 @@ export function RatingModal({ open, onOpenChange }: RatingModalProps) {
 
               <div className="space-y-2 pt-4 border-t">
                 <label htmlFor="feedback" className="text-sm font-medium">
-                  Additional Feedback (Optional)
+                  Additional feedback (optional)
                 </label>
                 <textarea
                   id="feedback"
@@ -208,7 +252,7 @@ export function RatingModal({ open, onOpenChange }: RatingModalProps) {
               </div>
 
               {submitStatus === 'error' && (
-                <div className="text-sm text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20 p-3 rounded-md">
+                <div role="alert" className="text-sm text-red-700 dark:text-red-400 bg-red-50 dark:bg-red-900/20 p-3 rounded-md">
                   Failed to submit rating. Please try again.
                 </div>
               )}
@@ -236,7 +280,7 @@ export function RatingModal({ open, onOpenChange }: RatingModalProps) {
                 ) : (
                   <>
                     <Send className="w-4 h-4 mr-2" />
-                    Submit Rating
+                    Submit rating
                   </>
                 )}
               </Button>

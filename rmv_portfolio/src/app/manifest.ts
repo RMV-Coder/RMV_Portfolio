@@ -2,13 +2,13 @@ import { MetadataRoute } from 'next'
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: 'Raymond Valdepeñas - Full Stack Developer',
+    name: 'Raymond Valdepeñas — Software Developer',
     short_name: 'RMV Portfolio',
-    description: 'Portfolio website of Raymond Valdepeñas, a passionate Full Stack Developer from the Philippines.',
+    description: 'Raymond Valdepeñas builds and ships software: a password manager, a browser, study tools and a live rental platform.',
     start_url: '/',
     display: 'standalone',
-    background_color: '#000000',
-    theme_color: '#0070f3',
+    background_color: '#14110f',
+    theme_color: '#ff7a1a',
     orientation: 'portrait-primary',
     categories: ['portfolio', 'developer', 'technology'],
     icons: [

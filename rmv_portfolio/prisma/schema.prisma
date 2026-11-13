@@ -36,3 +36,41 @@ model PortfolioRating {
   @@index([overall])
   @@map("portfolio_ratings")
 }
+
+// A visitor's request for a copy of the résumé. The PDF is never public: a
+// request is reviewed, and approval mints a personal, expiring download link.
+model ResumeRequest {
+  id              String    @id @default(cuid())
+
+  // Who is asking, and why
+  name            String    @db.VarChar(80)
+  email           String    @db.VarChar(254)
+  company         String?   @db.VarChar(120)
+  purpose         String    @db.VarChar(20) // hiring | freelance | collaboration | other
+  message         String    @db.Text
+
+  // Review outcome
+  status          String    @default("pending") @db.VarChar(20) // pending | approved | declined
+  adminNote       String?   @db.Text
+  decidedAt       DateTime?
+
+  // Download access. Only the SHA-256 of the link token is stored, so a
+  // database leak does not hand out working links.
+  tokenHash       String?   @unique @db.VarChar(64)
+  tokenExpiresAt  DateTime?
+  downloadCount   Int       @default(0)
+  maxDownloads    Int       @default(5)
+  lastDownloadAt  DateTime?
+
+  // Visitor information
+  ipAddress       String?   @db.VarChar(45)
+  userAgent       String?   @db.Text
+  country         String?   @db.VarChar(100)
+  city            String?   @db.VarChar(100)
+
+  createdAt       DateTime  @default(now())
+
+  @@index([status, createdAt(sort: Desc)])
+  @@index([email])
+  @@map("resume_requests")
+}

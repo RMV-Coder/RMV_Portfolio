@@ -11,7 +11,7 @@ import { PERSON, PROFILES } from '@/lib/site'
  * again, and keeps the text in sync with the site's own copy.
  */
 
-export const alt = `${PERSON.name} — Full Stack Developer and AIoT Researcher`
+export const alt = `${PERSON.name} — I build things that ship`
 export const size = { width: 1200, height: 630 }
 export const contentType = 'image/png'
 
@@ -26,8 +26,8 @@ export default async function Image() {
           flexDirection: 'column',
           justifyContent: 'center',
           padding: '80px',
-          background: 'linear-gradient(135deg, #0b1120 0%, #1e293b 55%, #0f172a 100%)',
-          color: '#f8fafc',
+          background: '#14110f',
+          color: '#f3ede4',
           fontFamily: 'sans-serif',
         }}
       >
@@ -37,27 +37,27 @@ export default async function Image() {
             fontSize: 26,
             letterSpacing: 4,
             textTransform: 'uppercase',
-            color: '#38bdf8',
+            color: '#7fd6e8',
             marginBottom: 28,
           }}
         >
-          Portfolio
+          {PERSON.name}
         </div>
 
-        <div style={{ display: 'flex', fontSize: 84, fontWeight: 700, lineHeight: 1.05 }}>
-          {PERSON.name}
+        <div style={{ display: 'flex', fontSize: 104, fontWeight: 800, lineHeight: 1 }}>
+          I build things that <span style={{ color: '#ff7a1a', marginLeft: 26 }}>ship.</span>
         </div>
 
         <div
           style={{
             display: 'flex',
             fontSize: 40,
-            color: '#94a3b8',
-            marginTop: 20,
+            color: '#a89f92',
+            marginTop: 28,
             lineHeight: 1.3,
           }}
         >
-          Full Stack Developer · AIoT Researcher
+          Software developer · password managers, browsers, study tools
         </div>
 
         <div
@@ -65,7 +65,7 @@ export default async function Image() {
             display: 'flex',
             marginTop: 'auto',
             fontSize: 26,
-            color: '#64748b',
+            color: '#e8b86d',
           }}
         >
           {PROFILES.github.replace('https://', '')} · {PERSON.locality}, {PERSON.country}

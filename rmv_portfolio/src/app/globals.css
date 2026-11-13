@@ -6,8 +6,12 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-montserrat);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-body);
+  --font-display: var(--font-display-face);
+  --font-mono: var(--font-mono-face);
+  --color-brass: var(--brass);
+  --color-blueprint: var(--blueprint);
+  --color-surface: var(--surface);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -43,85 +47,124 @@
   --radius-xl: calc(var(--radius) + 4px);
 }
 
+/*
+ * Forge — a maker's workbench.
+ *
+ * Dark is the default: warm charcoal, an ember accent for anything you can
+ * act on, brass for craft details, and blueprint cyan for annotations. The
+ * light theme is the same bench in daylight — drafting paper instead of
+ * steel — so the accents are deepened to keep their contrast on a pale base.
+ */
 :root {
   --radius: 0.625rem;
-  /* Soft cool off-white base — pure white read as glaring and killed the
-     section alternation; cards sit slightly brighter than the page. */
-  --background: oklch(0.975 0.005 250);
-  --foreground: oklch(0.129 0.042 264.695);
-  --card: oklch(0.995 0.002 250);
-  --card-foreground: oklch(0.129 0.042 264.695);
-  --popover: oklch(0.995 0.002 250);
-  --popover-foreground: oklch(0.129 0.042 264.695);
-  --primary: oklch(0.208 0.042 265.755);
-  --primary-foreground: oklch(0.984 0.003 247.858);
-  /* Soft blue (was near-white): keeps the primary→secondary heading
-     gradient legible in light mode. */
-  --secondary: oklch(0.88 0.05 250);
-  --secondary-foreground: oklch(0.208 0.042 265.755);
-  --muted: oklch(0.94 0.012 250);
-  --muted-foreground: oklch(0.5 0.046 257.417);
-  --accent: oklch(0.94 0.012 250);
-  --accent-foreground: oklch(0.208 0.042 265.755);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.9 0.015 255);
-  --input: oklch(0.9 0.015 255);
-  --ring: oklch(0.704 0.04 256.788);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.984 0.003 247.858);
-  --sidebar-foreground: oklch(0.129 0.042 264.695);
-  --sidebar-primary: oklch(0.208 0.042 265.755);
-  --sidebar-primary-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-accent: oklch(0.968 0.007 247.896);
-  --sidebar-accent-foreground: oklch(0.208 0.042 265.755);
-  --sidebar-border: oklch(0.929 0.013 255.508);
-  --sidebar-ring: oklch(0.704 0.04 256.788);
+  --background: #f4eee5;
+  --foreground: #1a1613;
+  --surface: #ece5d9;
+  --card: #fbf8f2;
+  --card-foreground: #1a1613;
+  --popover: #fbf8f2;
+  --popover-foreground: #1a1613;
+  --primary: #9c3d08;
+  --primary-foreground: #fff8f0;
+  --secondary: #e6ded1;
+  --secondary-foreground: #1a1613;
+  --muted: #e9e2d6;
+  --muted-foreground: #5f574d;
+  --accent: #e6ded1;
+  --accent-foreground: #1a1613;
+  --destructive: #b3261e;
+  --border: rgb(26 22 19 / 0.14);
+  --input: rgb(26 22 19 / 0.2);
+  --ring: #9c3d08;
+  --brass: #87590f;
+  --blueprint: #17637a;
+  --chart-1: #9c3d08;
+  --chart-2: #17637a;
+  --chart-3: #87590f;
+  --chart-4: #3f6b4a;
+  --chart-5: #5f574d;
+  --sidebar: #fbf8f2;
+  --sidebar-foreground: #1a1613;
+  --sidebar-primary: #9c3d08;
+  --sidebar-primary-foreground: #fff8f0;
+  --sidebar-accent: #e6ded1;
+  --sidebar-accent-foreground: #1a1613;
+  --sidebar-border: rgb(26 22 19 / 0.14);
+  --sidebar-ring: #9c3d08;
 }
 
 .dark {
-  --background: oklch(0.129 0.042 264.695);
-  --foreground: oklch(0.984 0.003 247.858);
-  --card: oklch(0.208 0.042 265.755);
-  --card-foreground: oklch(0.984 0.003 247.858);
-  --popover: oklch(0.208 0.042 265.755);
-  --popover-foreground: oklch(0.984 0.003 247.858);
-  --primary: oklch(0.929 0.013 255.508);
-  --primary-foreground: oklch(0.208 0.042 265.755);
-  --secondary: oklch(0.279 0.041 260.031);
-  --secondary-foreground: oklch(0.984 0.003 247.858);
-  --muted: oklch(0.279 0.041 260.031);
-  --muted-foreground: oklch(0.704 0.04 256.788);
-  --accent: oklch(0.279 0.041 260.031);
-  --accent-foreground: oklch(0.984 0.003 247.858);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.551 0.027 264.364);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.208 0.042 265.755);
-  --sidebar-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-accent: oklch(0.279 0.041 260.031);
-  --sidebar-accent-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.551 0.027 264.364);
+  --background: #14110f;
+  --foreground: #f3ede4;
+  --surface: #191512;
+  --card: #1d1916;
+  --card-foreground: #f3ede4;
+  --popover: #1d1916;
+  --popover-foreground: #f3ede4;
+  --primary: #ff7a1a;
+  --primary-foreground: #1a0e05;
+  --secondary: #2a241f;
+  --secondary-foreground: #f3ede4;
+  --muted: #221d19;
+  --muted-foreground: #a89f92;
+  --accent: #2a241f;
+  --accent-foreground: #f3ede4;
+  --destructive: #ff8f87;
+  --border: rgb(243 237 228 / 0.12);
+  --input: rgb(243 237 228 / 0.18);
+  --ring: #ff7a1a;
+  --brass: #e8b86d;
+  --blueprint: #7fd6e8;
+  --chart-1: #ff7a1a;
+  --chart-2: #7fd6e8;
+  --chart-3: #e8b86d;
+  --chart-4: #8fd694;
+  --chart-5: #a89f92;
+  --sidebar: #1d1916;
+  --sidebar-foreground: #f3ede4;
+  --sidebar-primary: #ff7a1a;
+  --sidebar-primary-foreground: #1a0e05;
+  --sidebar-accent: #2a241f;
+  --sidebar-accent-foreground: #f3ede4;
+  --sidebar-border: rgb(243 237 228 / 0.12);
+  --sidebar-ring: #ff7a1a;
 }
 
 @layer base {
   * {
-    @apply border-border outline-ring/50;
+    @apply border-border outline-ring;
+  }
+  /*
+   * One visible focus indicator for everything a keyboard user can reach.
+   * Full-strength ember clears 3:1 against both backgrounds (4.7:1 light,
+   * 7.2:1 dark); the old 50% ring did not. Components that draw their own
+   * ring set outline-none, and utilities win over this base rule.
+   */
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
+  /*
+   * <main> only takes focus when the skip link sends it there, and a home
+   * page section only when a header link scrolls to it (the header adds
+   * tabindex="-1" for that). They are landing points, not controls, so they
+   * do not get a page-sized ring of their own.
+   */
+  main:focus,
+  section[id][tabindex="-1"]:focus {
+    outline: none;
   }
   body {
     @apply bg-background text-foreground;
+  }
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-display), var(--font-sans), system-ui, sans-serif;
+    letter-spacing: -0.02em;
+  }
+  ::selection {
+    background: color-mix(in oklab, var(--primary) 35%, transparent);
   }
 }
 
@@ -143,50 +186,20 @@ html.lenis body {
   overflow: clip;
 }
 
-/* Faint dotted texture on the parallax section panels so their slower
-   (background) motion is perceptible against the content. Light mode needs
-   a stronger dot than dark — low-alpha marks vanish on a bright base. */
-.stack-reveal-pattern {
-  background-image: radial-gradient(circle at center, oklch(0.4 0.03 260 / 0.11) 1px, transparent 1.6px);
-  background-size: 34px 34px;
-  -webkit-mask-image: linear-gradient(to bottom, #000, transparent 70%);
-  mask-image: linear-gradient(to bottom, #000, transparent 70%);
-}
-
-.dark .stack-reveal-pattern {
-  background-image: radial-gradient(circle at center, oklch(0.85 0.02 260 / 0.05) 1px, transparent 1.6px);
-}
-
 /* ── Custom cursor + reactive background ───────────────────────────── */
 :root {
   /* Live cursor position, published by <CustomCursor /> (rAF-throttled). */
   --cursor-x: 50vw;
   --cursor-y: 50vh;
-  /* Per-section spotlight accent (default = home / blue). Light mode needs
-     more alpha than dark for the tint to register on a bright base. */
-  --section-accent: oklch(0.62 0.19 255 / 0.14);
-  --grid-color: oklch(0.5 0.03 260 / 0.08);
+  /* The light under the cursor: an ember glow, like a lamp over the bench. */
+  --section-accent: rgb(156 61 8 / 0.1);
+  --grid-color: rgb(23 99 122 / 0.1);
 }
 
 .dark {
-  --section-accent: oklch(0.65 0.19 255 / 0.13);
-  --grid-color: oklch(0.85 0.02 260 / 0.05);
+  --section-accent: rgb(255 122 26 / 0.1);
+  --grid-color: rgb(127 214 232 / 0.06);
 }
-
-/* Per-section accents — must look good in both themes (low alpha). */
-[data-active-section="home"] { --section-accent: oklch(0.62 0.19 255 / 0.14); }
-[data-active-section="about"] { --section-accent: oklch(0.72 0.15 70 / 0.16); }
-[data-active-section="skills"] { --section-accent: oklch(0.65 0.13 200 / 0.16); }
-[data-active-section="research"] { --section-accent: oklch(0.68 0.17 150 / 0.15); }
-[data-active-section="projects"] { --section-accent: oklch(0.6 0.2 300 / 0.14); }
-[data-active-section="contact"] { --section-accent: oklch(0.63 0.21 15 / 0.14); }
-
-.dark[data-active-section="home"] { --section-accent: oklch(0.65 0.19 255 / 0.14); }
-.dark[data-active-section="about"] { --section-accent: oklch(0.78 0.15 70 / 0.14); }
-.dark[data-active-section="skills"] { --section-accent: oklch(0.74 0.14 200 / 0.14); }
-.dark[data-active-section="research"] { --section-accent: oklch(0.75 0.17 150 / 0.14); }
-.dark[data-active-section="projects"] { --section-accent: oklch(0.66 0.21 300 / 0.14); }
-.dark[data-active-section="contact"] { --section-accent: oklch(0.68 0.22 15 / 0.14); }
 
 /* Hide the native cursor ONLY while the custom cursor is active. */
 html.custom-cursor,
@@ -232,5 +245,89 @@ html.custom-cursor * {
       var(--section-accent),
       transparent 62%
     );
+  }
+}
+
+/* ── Forge ─────────────────────────────────────────────────────────── */
+
+/* Blueprint annotation: "fig. 01 — the bench". */
+.fig-label {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  color: var(--blueprint);
+}
+
+/* Drafting-paper grid for section backdrops. */
+.bp-grid {
+  background-image:
+    linear-gradient(to right, var(--grid-color) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--grid-color) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+/* A dimension line: ──┤ label ├── */
+.dim-rule {
+  height: 1px;
+  background: repeating-linear-gradient(
+    to right,
+    color-mix(in oklab, var(--blueprint) 55%, transparent) 0 6px,
+    transparent 6px 10px
+  );
+}
+
+/*
+ * Hero entrance. Pure CSS on purpose: the headline is server-rendered and
+ * must be readable before — and without — any JavaScript. (The old hero
+ * started at opacity 0 and waited for a script to reveal it.)
+ */
+@keyframes forge-rise {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.forge-rise {
+  animation: forge-rise 0.8s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  animation-delay: calc(var(--i, 0) * 90ms);
+}
+
+@keyframes ember-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 color-mix(in oklab, var(--primary) 45%, transparent);
+  }
+  50% {
+    box-shadow: 0 0 0 10px transparent;
+  }
+}
+
+.ember-pulse {
+  animation: ember-pulse 2.4s ease-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .forge-rise,
+  .ember-pulse {
+    animation: none;
+  }
+}
+
+/*
+ * Printing. <ScrollMotion /> hides everything below the fold until it is
+ * scrolled to (inline opacity 0 and a transform), so a page printed or saved
+ * as a PDF without scrolling first would have blank sections. Show it all.
+ */
+@media print {
+  [data-reveal],
+  [data-reveal="stagger"] > *,
+  [data-word] {
+    opacity: 1 !important;
+    transform: none !important;
   }
 }

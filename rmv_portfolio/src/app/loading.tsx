@@ -2,8 +2,11 @@ import * as React from "react"
 
 export default function Loading() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background">
-      <div className="text-center space-y-4">
+    // role="status" announces the loading state; the spinner and skeleton bars
+    // are decoration, so screen readers skip them.
+    <div role="status" className="min-h-screen flex items-center justify-center bg-background">
+      <span className="sr-only">Loading</span>
+      <div aria-hidden="true" className="text-center space-y-4">
         <div className="relative">
           <div className="w-16 h-16 border-4 border-primary/20 border-t-primary rounded-full animate-spin mx-auto"></div>
         </div>

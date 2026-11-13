@@ -1,163 +1,94 @@
-"use client"
-
-import * as React from "react"
 import Image from "next/image"
-import { motion } from "framer-motion"
-import { Download, MapPin, Coffee, Code, Gamepad2 } from "lucide-react"
-import { WorkAvailability } from "@/components/work-availability"
-import { Parallax } from "@/components/motion/parallax"
+import { Briefcase, GraduationCap, MapPin } from "lucide-react"
+import { ResumeRequestButton } from "@/components/resume-request-button"
+import { SectionHeading } from "@/components/sections/section-heading"
+import { education } from "@/data/experience"
+import { PERSON } from "@/lib/site"
 
-
-import { ResumeUnavailableModal } from "@/components/resume-unavailable-modal"
-import { downloadResume } from "@/lib/resume"
-
+/** The person behind the bench, in his own words and without the buzzwords. */
 export function AboutSection() {
-  const [showResumeModal, setShowResumeModal] = React.useState(false)
-
   return (
-    <section id="about" className="py-20">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header */}
-        <Parallax speed={0.25} className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-            About Me
-          </h2>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Get to know the person behind the code
-          </p>
-        </Parallax>
+    <section id="about" aria-labelledby="about-heading" className="relative py-24 sm:py-32">
+      <div className="mx-auto grid max-w-7xl gap-14 px-4 sm:px-6 lg:grid-cols-[0.8fr_1.2fr] lg:gap-20 lg:px-8">
+        <div data-reveal="scale" className="relative mx-auto w-full max-w-sm lg:mx-0">
+          {/* Corner ticks, like a photo mounted on a drawing sheet. */}
+          <span aria-hidden="true" className="absolute -left-3 -top-3 h-6 w-6 border-l-2 border-t-2 border-blueprint" />
+          <span aria-hidden="true" className="absolute -bottom-3 -right-3 h-6 w-6 border-b-2 border-r-2 border-blueprint" />
+          <div className="relative aspect-[4/5] overflow-hidden rounded-xl border border-border bg-card">
+            <Image
+              src="/1-3-01.jpeg"
+              alt={`${PERSON.name}, software developer`}
+              fill
+              className="object-cover object-top"
+              sizes="(max-width: 416px) calc(100vw - 32px), 384px"
+            />
+          </div>
+          <p className="fig-label mt-4">the maker</p>
+        </div>
 
-        {/* Two Column Layout */}
-        <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
-          {/* Left Column - Image and Stats */}
-          <Parallax speed={0.15} className="relative">
-            {/* Profile Image */}
-            <div className="relative max-w-md mx-auto lg:mx-0">
-              <div className="aspect-square relative rounded-2xl bg-gradient-to-br from-primary/20 to-secondary/20 p-4">
-                <div className="w-full h-full relative rounded-xl overflow-hidden">
-                  <Image
-                    src="/1-3-01.jpeg"
-                    alt="Raymond Valdepeñas - Full Stack Developer"
-                    fill
-                    className="object-cover object-top"
-                    priority
-                    quality={90}
-                    sizes="(max-width: 768px) 100vw, 50vw"
-                  />
-                </div>
+        <div>
+          <SectionHeading
+            id="about-heading"
+            figure="about"
+            title={
+              <>
+                I like building <span className="text-primary">the whole thing.</span>
+              </>
+            }
+          />
+          <div data-reveal="stagger" className="mt-6 space-y-4 text-lg leading-relaxed text-muted-foreground">
+            <p>
+              I&apos;m <span className="font-semibold text-foreground">Raymond</span>, a software developer
+              from Tangub City in the Philippines. I get the most out of building a product end to end:
+              the idea, the design, the code, the launch, and the part where real people start using it.
+            </p>
+            <p>
+              By day I&apos;m a software developer at Career Team. On my own time I build the tools on this site,
+              most of them because I wanted them to exist.
+            </p>
+            <p>
+              I studied the Internet of Things at university, which is why some of my software ends up
+              attached to cameras, sensors and the occasional robot.
+            </p>
+          </div>
 
-                {/* Floating elements */}
-                <motion.div
-                  className="absolute -top-4 -right-4 bg-primary text-primary-foreground p-3 rounded-full"
-                  animate={{ y: [0, -10, 0] }}
-                  transition={{ duration: 2, repeat: Infinity }}
-                >
-                  <Code className="w-6 h-6" />
-                </motion.div>
-
-                <motion.div
-                  className="absolute -bottom-4 -left-4 bg-secondary text-secondary-foreground p-3 rounded-full"
-                  animate={{ y: [0, 10, 0] }}
-                  transition={{ duration: 2, repeat: Infinity, delay: 1 }}
-                >
-                  <Coffee className="w-6 h-6" />
-                </motion.div>
+          <dl data-reveal className="mt-8 grid gap-4 border-t border-border pt-8 sm:grid-cols-2">
+            <div className="flex items-start gap-3">
+              <MapPin className="mt-0.5 h-5 w-5 shrink-0 text-brass" aria-hidden="true" />
+              <div>
+                <dt className="font-mono text-xs uppercase tracking-wider text-muted-foreground">Based in</dt>
+                <dd className="mt-0.5 text-foreground">
+                  {PERSON.locality}, {PERSON.country} · UTC+8
+                </dd>
               </div>
             </div>
-
-            {/* Quick Stats */}
-            <div className="grid grid-cols-2 gap-4 mt-8">
-              <div className="bg-card p-4 rounded-lg border border-border text-center">
-                <div className="text-2xl font-bold text-primary mb-1">5+</div>
-                <div className="text-sm text-muted-foreground">Years Coding</div>
-              </div>
-              <div className="bg-card p-4 rounded-lg border border-border text-center">
-                <div className="text-2xl font-bold text-primary mb-1">50+</div>
-                <div className="text-sm text-muted-foreground">Projects</div>
+            <div className="flex items-start gap-3">
+              <GraduationCap className="mt-0.5 h-5 w-5 shrink-0 text-brass" aria-hidden="true" />
+              <div>
+                <dt className="font-mono text-xs uppercase tracking-wider text-muted-foreground">Graduated</dt>
+                <dd className="mt-0.5 text-foreground">{education.honour}, MSU-IIT</dd>
               </div>
             </div>
-          </Parallax>
-
-          {/* Right Column - Bio Content */}
-          <Parallax speed={0.35} className="space-y-6">
-            {/* Bio Text */}
-            <div className="space-y-4">
-              <p className="text-lg text-foreground leading-relaxed">
-                Hello! I&apos;m <span className="font-semibold text-primary">Raymond Valdepeñas</span>,
-                a passionate fullstack developer with expertise in building modern web applications
-                and integrating cutting-edge technologies like AI and IoT systems.
-              </p>
-
-              <p className="text-muted-foreground leading-relaxed">
-                With over 5 years of experience in software development, I specialize in creating
-                scalable solutions using React, Next.js, Node.js, and various database technologies.
-                My journey in tech started with a curiosity about how things work, which evolved
-                into a passion for creating digital experiences that make a difference.
-              </p>
-
-              <p className="text-muted-foreground leading-relaxed">
-                I have a strong background in database management and enjoy working on projects
-                that integrate AI capabilities with IoT systems. When I&apos;m not coding, you&apos;ll find
-                me exploring new technologies, contributing to open-source projects, or sharing
-                knowledge with the developer community.
-              </p>
-            </div>
-
-            {/* Personal Details */}
-            <div className="grid sm:grid-cols-2 gap-4 py-6 border-t border-border">
-              <div className="flex items-center gap-3">
-                <MapPin className="w-5 h-5 text-primary" />
-                <span className="text-muted-foreground">Philippines</span>
-              </div>
-
-              {/* Work Availability Status - Change props as needed */}
-              <WorkAvailability available={false} status={7} />
-            </div>
-
-            {/* Interests */}
-            <div>
-              <h3 className="font-semibold text-foreground mb-4">When I&apos;m not coding:</h3>
-              <div className="flex flex-wrap gap-3">
-                {[
-                  { icon: Coffee, label: "Coffee brewing" },
-                  { icon: Gamepad2, label: "Gaming" },
-                  { icon: Code, label: "Open source" },
-                ].map((interest) => (
-                  <motion.div
-                    key={interest.label}
-                    className="flex items-center gap-2 bg-muted px-3 py-2 rounded-full text-sm"
-                    whileHover={{ y: -3, scale: 1.05 }}
-                  >
-                    <interest.icon className="w-4 h-4" />
-                    {interest.label}
-                  </motion.div>
-                ))}
+            <div className="flex items-start gap-3 sm:col-span-2">
+              <Briefcase className="mt-0.5 h-5 w-5 shrink-0 text-brass" aria-hidden="true" />
+              <div>
+                <dt className="font-mono text-xs uppercase tracking-wider text-muted-foreground">Right now</dt>
+                {/* One plain sentence. Update it when your situation changes. */}
+                <dd className="mt-0.5 text-foreground">
+                  Working as a software developer at Career Team, and glad to talk about projects and roles.
+                </dd>
               </div>
             </div>
+          </dl>
 
-            {/* Resume Download Button */}
-            <div className="pt-4">
-              <motion.button
-                  className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-6 py-3 rounded-lg font-medium hover:bg-primary/90 transition-colors"
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={async () => {
-                    if (!(await downloadResume())) setShowResumeModal(true)
-                  }}
-                >
-                  <Download className="w-5 h-5" />
-                  Download Resume
-                </motion.button>
-            </div>
-          </Parallax>
+          <div data-reveal className="mt-8 flex flex-wrap items-center gap-4">
+            <ResumeRequestButton className="inline-flex items-center gap-2 rounded-lg border border-border bg-card px-5 py-3 font-semibold text-foreground transition-colors hover:border-primary hover:text-primary" />
+            <p className="max-w-xs text-sm text-muted-foreground">
+              Shared personally, by email. I don&apos;t post it publicly.
+            </p>
+          </div>
         </div>
       </div>
-
-      {/* Resume Unavailable Modal */}
-      <ResumeUnavailableModal
-        open={showResumeModal}
-        onOpenChange={setShowResumeModal}
-      />
     </section>
   )
 }

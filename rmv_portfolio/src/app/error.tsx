@@ -2,7 +2,10 @@
 
 import * as React from "react"
 import Link from "next/link"
-import { motion } from "framer-motion"
+
+// No framer-motion here. The root error boundary loads with every page, so
+// anything it imports ships on first load everywhere; the entrance uses the
+// site's CSS .forge-rise class instead.
 
 interface ErrorProps {
   error: Error & { digest?: string }
@@ -16,16 +19,12 @@ export default function Error({ error, reset }: ErrorProps) {
   }, [error])
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background px-4">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
-        className="text-center max-w-md mx-auto"
-      >
+    <main id="main" className="min-h-screen flex items-center justify-center bg-background px-4">
+      <div className="forge-rise text-center max-w-md mx-auto">
         <div className="mb-8">
           <div className="w-20 h-20 rounded-full bg-red-100 dark:bg-red-900/20 flex items-center justify-center mx-auto mb-4">
             <svg
+              aria-hidden="true"
               className="w-10 h-10 text-red-600 dark:text-red-400"
               fill="none"
               stroke="currentColor"
@@ -40,29 +39,28 @@ export default function Error({ error, reset }: ErrorProps) {
             </svg>
           </div>
           <h1 className="text-2xl font-bold text-foreground mb-2">
-            Oops! Something went wrong
+            Something went wrong
           </h1>
           <p className="text-muted-foreground mb-6">
-            We encountered an unexpected error. Don&apos;t worry, it&apos;s not your fault!
+            The page hit an unexpected error. You can try again, or go back to the start.
           </p>
         </div>
-        
+
         <div className="space-y-4">
-          <motion.button
+          <button
+            type="button"
             onClick={reset}
-            className="bg-primary text-primary-foreground px-6 py-3 rounded-lg font-medium hover:bg-primary/90 transition-colors"
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
+            className="bg-primary text-primary-foreground px-6 py-3 rounded-lg font-medium hover:bg-primary/90 transition hover:scale-[1.02] active:scale-[0.98]"
           >
-            Try Again
-          </motion.button>
-          
+            Try again
+          </button>
+
           <div>
             <Link
               href="/"
               className="text-sm text-muted-foreground hover:text-foreground transition-colors underline"
             >
-              Return to Home
+              Back to the start
             </Link>
           </div>
         </div>
@@ -70,14 +68,14 @@ export default function Error({ error, reset }: ErrorProps) {
         {process.env.NODE_ENV === 'development' && (
           <details className="mt-8 text-left bg-muted p-4 rounded-lg">
             <summary className="cursor-pointer text-sm font-medium mb-2">
-              Error Details (Development Only)
+              Error details (development only)
             </summary>
             <pre className="text-xs text-muted-foreground overflow-auto">
               {error.message}
             </pre>
           </details>
         )}
-      </motion.div>
-    </div>
+      </div>
+    </main>
   )
 }
