@@ -74,3 +74,18 @@ model ResumeRequest {
   @@index([email])
   @@map("resume_requests")
 }
+
+// The résumé PDF itself. It is uploaded from /admin and kept here rather than
+// in the repository, which is public. The table holds one row.
+model ResumeFile {
+  id          String   @id @default("current")
+  data        Bytes
+  size        Int
+  // SHA-256 of the bytes, hex.
+  sha256      String   @db.VarChar(64)
+  // The name it was uploaded under; shown in the admin page only.
+  fileName    String   @db.VarChar(120)
+  uploadedAt  DateTime @default(now())
+
+  @@map("resume_file")
+}

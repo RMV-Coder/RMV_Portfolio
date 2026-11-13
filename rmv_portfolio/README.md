@@ -98,7 +98,7 @@ Visit the live portfolio: [raymondvaldepenas.dev](https://raymondvaldepenas-dev.
 4. Update social links throughout components
 
 ### **Content**
-1. Add your resume as `public/resume.pdf`
+1. Upload your résumé at `/admin` (see "Résumé on request" below). Do not add it to the repository.
 2. Replace profile photo in `public/` directory
 3. Update metadata in `src/app/layout.tsx`
 
@@ -123,7 +123,7 @@ See detailed deployment guide in [DEPLOYMENT.md](./DEPLOYMENT.md)
 
 ## Résumé on request
 
-The résumé is not a public file. It lives in `private/resume.pdf` (outside `public/`, so no URL serves it) and is handed out one approved request at a time.
+The résumé is not a public file, and it is not in this repository. You upload the PDF at `/admin`; it is stored in the database and handed out one approved request at a time.
 
 **How it works**
 
@@ -134,7 +134,7 @@ The résumé is not a public file. It lives in `private/resume.pdf` (outside `pu
 
 **One-time setup**
 
-1. Apply the database migration that adds the `resume_requests` table:
+1. Apply the database migrations that add the `resume_requests` and `resume_file` tables:
    ```bash
    npx prisma migrate deploy
    ```
@@ -143,10 +143,11 @@ The résumé is not a public file. It lives in `private/resume.pdf` (outside `pu
      `node -e "console.log(require('crypto').randomBytes(48).toString('base64url'))"`
    - `ADMIN_PASSWORD`: a passphrase of at least 16 characters, used to sign in at `/admin`.
 3. Make sure `SMTP_*` and `CONTACT_EMAIL` are set, so the notification and approval emails can be sent.
+4. Sign in at `/admin` and upload the résumé PDF (4 MB at most). Requests cannot be approved until one is there.
 
 Without `PRISMA_DATABASE_URL`, local development keeps requests in memory and prints emails to the server log, so the whole flow can be tried with nothing configured. Production never falls back to memory.
 
-**Replacing the résumé:** overwrite `private/resume.pdf` and redeploy. Existing approved links serve the new file.
+**Replacing the résumé:** upload a new PDF at `/admin`. No redeploy is needed, and links already sent serve the new file.
 
 ## Adding or editing a tool
 

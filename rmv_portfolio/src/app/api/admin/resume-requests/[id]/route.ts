@@ -4,6 +4,7 @@ import { baseUrl, isSameOrigin } from '@/lib/request-guards'
 import { sendMail, type MailOutcome } from '@/lib/mailer'
 import { canDecide, hasAdminSession } from '@/lib/resume/admin-auth'
 import { approvalEmail, declineEmail } from '@/lib/resume/emails'
+import { getResumeFileStore } from '@/lib/resume/file-store'
 import { getResumeRequestStore, StoreUnavailableError } from '@/lib/resume/store'
 import { ACCESS_MAX_DOWNLOADS, ACCESS_TTL_DAYS, createAccessToken } from '@/lib/resume/tokens'
 
@@ -80,6 +81,14 @@ export async function POST(
         ? await sendMail(declineEmail(record, note))
         : 'not-sent'
       return NextResponse.json({ ok: true, status: record.status, email })
+    }
+
+    // Nothing uploaded yet: approving would email a link with nothing behind it.
+    if (!(await getResumeFileStore().info())) {
+      return NextResponse.json(
+        { error: 'Upload your résumé on the admin page first. There is nothing to send yet.' },
+        { status: 409 }
+      )
     }
 
     // Approving again issues a fresh link and retires the old one — the way to

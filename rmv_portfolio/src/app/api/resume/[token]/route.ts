@@ -1,12 +1,10 @@
-import { readFile } from 'node:fs/promises'
-import path from 'node:path'
 import { NextRequest, NextResponse } from 'next/server'
+import { getResumeFileStore } from '@/lib/resume/file-store'
 import { getResumeRequestStore } from '@/lib/resume/store'
 import { hashAccessToken, looksLikeAccessToken } from '@/lib/resume/tokens'
 
-// Outside `public/`, so there is no URL that serves it. `next.config.ts`
-// lists the file under outputFileTracingIncludes so it ships with this route.
-const RESUME_PATH = path.join(process.cwd(), 'private', 'resume.pdf')
+// The PDF is uploaded from /admin and kept in the database: it is not in the
+// repository and not on disk, so this route is the only thing that serves it.
 const DOWNLOAD_NAME = 'Raymond_Valdepenas_Resume.pdf'
 
 type Context = { params: Promise<{ token: string }> }
@@ -47,17 +45,21 @@ export async function POST(request: NextRequest, { params }: Context) {
   if (!looksLikeAccessToken(token)) return backToLanding()
 
   try {
-    // Read first: if the file is missing, a download must not be spent on it.
-    const file = await readFile(RESUME_PATH)
+    // Read first: if nothing has been uploaded, a download must not be spent on it.
+    const file = await getResumeFileStore().get()
+    if (!file) {
+      console.error('[resume] download asked for, but no résumé has been uploaded')
+      return landing(request, token, true)
+    }
 
     const record = await getResumeRequestStore().consumeDownload(hashAccessToken(token), new Date())
     if (!record) return backToLanding()
 
-    return new NextResponse(new Uint8Array(file), {
+    return new NextResponse(new Uint8Array(file.data), {
       headers: {
         'Content-Type': 'application/pdf',
         'Content-Disposition': `attachment; filename="${DOWNLOAD_NAME}"`,
-        'Content-Length': String(file.byteLength),
+        'Content-Length': String(file.size),
         'Cache-Control': 'private, no-store',
         'X-Robots-Tag': 'noindex, noarchive',
       },
