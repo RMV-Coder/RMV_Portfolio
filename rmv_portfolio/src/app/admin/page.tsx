@@ -1,7 +1,9 @@
 import { redirect } from "next/navigation"
 import { RequestCard } from "@/components/admin/request-card"
+import { ResumeFileCard, type ResumeFileSummary } from "@/components/admin/resume-file-card"
 import { SignOutButton } from "@/components/admin/login-form"
 import { hasAdminSession } from "@/lib/resume/admin-auth"
+import { getResumeFileStore, RESUME_MAX_BYTES } from "@/lib/resume/file-store"
 import { getResumeRequestStore, type ResumeRequestRecord } from "@/lib/resume/store"
 
 export const dynamic = "force-dynamic"
@@ -16,6 +18,31 @@ export default async function AdminPage() {
   } catch (error) {
     loadError = true
     console.error("[admin] could not load résumé requests:", error instanceof Error ? error.message : error)
+  }
+
+  // The file is looked up on its own: a failure here must not hide the requests.
+  let file: ResumeFileSummary | null = null
+  let fileError = false
+  try {
+    const info = await getResumeFileStore().info()
+    if (info) {
+      file = {
+        size: info.size,
+        sha256: info.sha256,
+        fileName: info.fileName,
+        uploadedAt: info.uploadedAt.toLocaleString("en-US", {
+          timeZone: "Asia/Manila",
+          month: "short",
+          day: "numeric",
+          year: "numeric",
+          hour: "numeric",
+          minute: "2-digit",
+        }),
+      }
+    }
+  } catch (error) {
+    fileError = true
+    console.error("[admin] could not read the stored résumé:", error instanceof Error ? error.message : error)
   }
 
   const pending = requests.filter((request) => request.status === "pending")
@@ -58,6 +85,15 @@ export default async function AdminPage() {
         </div>
         <SignOutButton />
       </header>
+
+      {fileError ? (
+        <p className="mb-8 rounded-xl border border-border bg-card p-6 text-sm leading-relaxed">
+          Couldn&apos;t check the stored résumé. Make sure the <code className="font-mono">resume_file</code>{" "}
+          migration has been applied.
+        </p>
+      ) : (
+        <ResumeFileCard file={file} maxBytes={RESUME_MAX_BYTES} />
+      )}
 
       {loadError ? (
         <p className="rounded-xl border border-border bg-card p-6 text-sm leading-relaxed">

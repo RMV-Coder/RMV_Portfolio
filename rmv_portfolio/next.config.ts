@@ -21,12 +21,6 @@ const nextConfig: NextConfig = {
   // Turbopack configuration for Next.js 16
   turbopack: {},
 
-  // The résumé PDF lives outside public/ and is read from disk by the
-  // download route, so it has to be named here to ship with that function.
-  outputFileTracingIncludes: {
-    '/api/resume/*': ['./private/resume.pdf'],
-  },
-
   // Performance optimizations
   compress: true,
   poweredByHeader: false,

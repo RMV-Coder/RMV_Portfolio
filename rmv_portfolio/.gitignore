@@ -43,3 +43,8 @@ next-env.d.ts
 
 .vercel
 .env*.local
+
+# The résumé PDF is uploaded from /admin and stored in the database.
+# This repository is public: a local copy must never be committed.
+/private/
+resume*.pdf

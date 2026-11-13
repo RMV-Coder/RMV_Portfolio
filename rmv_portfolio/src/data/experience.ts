@@ -19,11 +19,20 @@ export const experience: ExperienceEntry[] = [
   {
     role: "Software Developer",
     organisation: "Career Team",
-    about: "The company behind Career EDGE.",
-    period: "Present",
+    // From the company's own site (careerteam.com/about, read November 2026).
+    about:
+      "A US workforce development and technology company, founded in 1996. Its Career Edge platform, built for the agencies that help people find work, is used in more than 30 states.",
+    period: "Jul 2026 – Present",
     current: true,
-    // No duties listed: the role and employer above are all that has been
-    // stated, and repeating them as a bullet would add nothing.
+    // No bullet points yet, at the owner's request.
+    points: [],
+    link: { label: "careerteam.com", href: "https://www.careerteam.com" },
+  },
+  {
+    role: "Junior Software Developer",
+    organisation: "Career Team",
+    about: "Where I started at Career Team, before being promoted to Software Developer in July 2026.",
+    period: "Dec 2025 – Jul 2026",
     points: [],
     link: { label: "careerteam.com", href: "https://www.careerteam.com" },
   },
