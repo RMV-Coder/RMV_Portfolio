@@ -10,7 +10,8 @@ import { PUBLICATION, SITE_URL, absoluteUrl } from '@/lib/site'
  * treats them as duplicates of `/`, which dilutes the signal for the one URL
  * that matters. They are removed here.
  *
- * `/research` is a real, separately-rendered page, so it earns an entry.
+ * `/tools` and `/research` are real, separately-rendered pages, so each earns
+ * an entry.
  */
 export default function sitemap(): MetadataRoute.Sitemap {
   return [
@@ -19,6 +20,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified: new Date(),
       changeFrequency: 'weekly',
       priority: 1,
+    },
+    {
+      url: absoluteUrl('/tools'),
+      lastModified: new Date(),
+      changeFrequency: 'weekly',
+      priority: 0.9,
     },
     {
       url: absoluteUrl('/research'),

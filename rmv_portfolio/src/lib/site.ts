@@ -90,9 +90,10 @@ export const PERSON = {
   academicName: 'Raymond M. Valdepeñas',
   givenName: 'Raymond',
   familyName: 'Valdepeñas',
-  jobTitle: 'Full Stack Developer',
+  jobTitle: 'Software Developer',
+  /** Current employer — emitted as schema.org `worksFor`. */
+  employer: { name: 'Career Team', url: 'https://www.careerteam.com' },
   email: 'raymondvaldepenas.dev@gmail.com',
-  telephone: '+639667324567',
   locality: 'Tangub City',
   region: 'Misamis Occidental',
   country: 'Philippines',
@@ -101,13 +102,13 @@ export const PERSON = {
 
 export const SITE = {
   name: 'Raymond Valdepeñas Portfolio',
-  title: `${PERSON.name} — Full Stack Developer, AI/IoT Researcher`,
+  title: `${PERSON.name} — Software Developer, AI/IoT Researcher`,
   /**
    * Kept under ~155 characters so Google renders it whole rather than
    * synthesising a replacement from page text.
    */
   description:
-    'Raymond Valdepeñas is a full stack developer and AIoT researcher from Tangub City, Philippines, building with React, Next.js, Node.js, and edge AI.',
+    'Raymond Valdepeñas is a software developer and AIoT researcher from Tangub City, Philippines. He builds LocalPass, Veltriva, Emmaus and myBoardHub.',
   ogImage: absoluteUrl('/opengraph-image'),
   locale: 'en_US',
 } as const

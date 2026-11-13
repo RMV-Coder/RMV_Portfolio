@@ -32,7 +32,7 @@ const ANSWER_ENGINE_AGENTS = [
 ]
 
 /** Never useful to crawl: no indexable content, and some are rate-limited. */
-const DISALLOWED_PATHS = ['/api/', '/admin/']
+const DISALLOWED_PATHS = ['/api/', '/admin/', '/resume/']
 
 export default function robots(): MetadataRoute.Robots {
   return {

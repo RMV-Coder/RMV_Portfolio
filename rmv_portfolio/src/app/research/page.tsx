@@ -7,9 +7,11 @@ import {
   ORCID_URL,
   PERSON,
   PUBLICATION,
+  SITE,
   absoluteUrl,
 } from '@/lib/site'
 import { researchPageGraph } from '@/lib/structured-data'
+import { Navigation } from '@/components/navigation'
 
 /**
  * A dedicated, statically rendered page for the publication.
@@ -22,8 +24,9 @@ import { researchPageGraph } from '@/lib/structured-data'
  *
  * This page is that URL: a plain server-rendered document stating the citation
  * in full, in text, with the DOI written out rather than hidden behind link
- * text. It is deliberately boring HTML — no animation, no client JavaScript —
- * because the audience is a crawler as much as a reader.
+ * text. It is deliberately boring HTML — no animation, and no client
+ * JavaScript beyond the shared site header — because the audience is a crawler
+ * as much as a reader.
  */
 
 const CANONICAL = absoluteUrl('/research')
@@ -39,6 +42,9 @@ export const metadata: Metadata = {
     description: `Peer-reviewed research by ${PERSON.academicName}, including "${PUBLICATION.title}" (${PUBLICATION.publisher}, ${PUBLICATION.year}).`,
     publishedTime: PUBLICATION.datePublished,
     authors: [absoluteUrl('/')],
+    // A page-level openGraph replaces the layout's whole object, so these are restated.
+    siteName: SITE.name,
+    locale: SITE.locale,
   },
   /**
    * Citation meta tags, read by Google Scholar, Zotero, Mendeley, and several
@@ -96,7 +102,10 @@ export default function ResearchPage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(researchPageGraph) }}
       />
 
-      <main className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
+      <Navigation />
+
+      {/* Top padding clears the fixed 64px header so it does not cover the back link. */}
+      <main id="main" className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-16 md:pt-36 md:pb-24">
         <Link
           href="/"
           className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors mb-10"

@@ -13,9 +13,10 @@ export function setLenis(instance: Lenis | null) {
 }
 
 /**
- * Smoothly scroll to a section selector, element, or absolute Y. Uses the
- * shared Lenis instance when available and falls back to native smooth scroll
- * (reduced-motion users, or before Lenis mounts).
+ * Scroll to a section selector, element, or absolute Y. Uses the shared Lenis
+ * instance when available. Otherwise it falls back to native scrolling: an
+ * instant jump for reduced-motion users (who never get Lenis), and native
+ * smooth scrolling for everyone else before Lenis mounts.
  */
 export function scrollTo(target: string | HTMLElement | number) {
   if (lenis) {
@@ -23,11 +24,17 @@ export function scrollTo(target: string | HTMLElement | number) {
     return
   }
 
+  const behavior: ScrollBehavior = window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    ? "instant"
+    : "smooth"
+
   if (typeof target === "number") {
-    window.scrollTo({ top: target, behavior: "smooth" })
-  } else if (typeof target === "string") {
-    document.querySelector(target)?.scrollIntoView({ behavior: "smooth" })
-  } else {
-    target.scrollIntoView({ behavior: "smooth" })
+    window.scrollTo({ top: target, behavior })
+    return
   }
+
+  // Same offset as the Lenis path, so the target is not hidden under the fixed header.
+  const element = typeof target === "string" ? document.querySelector(target) : target
+  if (!element) return
+  window.scrollTo({ top: element.getBoundingClientRect().top + window.scrollY + NAV_OFFSET, behavior })
 }

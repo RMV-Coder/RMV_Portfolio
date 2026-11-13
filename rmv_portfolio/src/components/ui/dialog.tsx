@@ -16,8 +16,12 @@ const DialogOverlay = React.forwardRef<
   React.ElementRef<typeof DialogPrimitive.Overlay>,
   React.ComponentPropsWithoutRef<typeof DialogPrimitive.Overlay>
 >(({ className, ...props }, ref) => (
+  // data-lenis-prevent: Lenis drives the page scroll from wheel events and
+  // ignores the scroll lock Radix puts on the page, so without it a wheel over
+  // the backdrop would still scroll the page behind an open dialog.
   <DialogPrimitive.Overlay
     ref={ref}
+    data-lenis-prevent
     className={`fixed inset-0 z-50 bg-black/80 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 ${className || ""}`}
     {...props}
   />
@@ -30,8 +34,10 @@ const DialogContent = React.forwardRef<
 >(({ className, children, ...props }, ref) => (
   <DialogPortal>
     <DialogOverlay />
+    {/* data-lenis-prevent: the wheel scrolls the dialog's own content (natively), never the page behind it. */}
     <DialogPrimitive.Content
       ref={ref}
+      data-lenis-prevent
       className={`fixed left-[50%] top-[50%] z-50 grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 border bg-background p-6 shadow-lg duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%] rounded-lg ${className || ""}`}
       {...props}
     >

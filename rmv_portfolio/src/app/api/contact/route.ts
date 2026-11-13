@@ -1,283 +1,165 @@
 import { NextRequest, NextResponse } from 'next/server'
-import nodemailer from 'nodemailer'
-import { contactFormSchema } from '@/lib/validations'
+import { ownerEmail, sendMail } from '@/lib/mailer'
+import { clientIp, createRateLimiter, isSameOrigin } from '@/lib/request-guards'
+import { PROFILES, SITE_URL } from '@/lib/site'
 import { escapeHtml } from '@/lib/utils'
+import { contactFormSchema } from '@/lib/validations'
 
-// Rate limiting storage (in production, use Redis or database)
-const rateLimit = new Map<string, { count: number; resetTime: number }>()
+/** Five messages per address per quarter of an hour: a speed bump against a flooded inbox. */
+const allow = createRateLimiter({ windowMs: 15 * 60 * 1000, max: 5 })
 
-// Rate limiting function
-function checkRateLimit(ip: string): boolean {
-  const now = Date.now()
-  const windowMs = 15 * 60 * 1000 // 15 minutes
-  const maxRequests = 5 // 5 requests per 15 minutes
+const NOT_NOW = "That didn't go through. Try again in a moment, or email me directly."
+const NOT_WORKING = "The contact form isn't working right now. Please email me directly."
 
-  const record = rateLimit.get(ip)
-  
-  if (!record || now > record.resetTime) {
-    rateLimit.set(ip, { count: 1, resetTime: now + windowMs })
-    return true
-  }
-  
-  if (record.count >= maxRequests) {
-    return false
-  }
-  
-  record.count++
-  return true
-}
+/** One line, no control characters: this ends up in an email subject. */
+const singleLine = (value: string) => value.replace(/[\u0000-\u001f\u007f]+/g, ' ').trim()
 
+/**
+ * The contact form. It only accepts posts from this site's own pages, limits
+ * how often one address may write, and hands the message to the same mailer
+ * the résumé requests use. Without SMTP settings, development prints the
+ * message to the server log instead of failing, so the form can be tried locally.
+ */
 export async function POST(request: NextRequest) {
-  try {
-    // Get client IP for rate limiting
-    const forwardedFor = request.headers.get('x-forwarded-for')
-    const ip = forwardedFor ? forwardedFor.split(',')[0] : 'unknown'
-    
-    // Check rate limit
-    if (!checkRateLimit(ip)) {
-      return NextResponse.json(
-        { error: 'Too many requests. Please try again later.' },
-        { status: 429 }
-      )
-    }
+  // A browser on this site always sends its Origin; a bare script does not.
+  if (!isSameOrigin(request)) {
+    return NextResponse.json({ error: NOT_NOW }, { status: 403 })
+  }
 
-    // Parse and validate request body
-    const body = await request.json()
-    const validatedData = contactFormSchema.parse(body)
-
-    // Check if required environment variables are set
-    if (!process.env.SMTP_USER || !process.env.SMTP_PASS) {
-      console.error('Missing SMTP credentials:', {
-        hasUser: !!process.env.SMTP_USER,
-        hasPass: !!process.env.SMTP_PASS,
-      })
-      return NextResponse.json(
-        { error: 'Email service not configured. Please contact the administrator.' },
-        { status: 503 }
-      )
-    }
-
-    // Create nodemailer transporter with enhanced configuration
-    const transporter = nodemailer.createTransport({
-      host: process.env.SMTP_HOST || 'smtp.gmail.com',
-      port: parseInt(process.env.SMTP_PORT || '587'),
-      secure: process.env.SMTP_SECURE === 'true', // true for 465, false for other ports
-      auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASS.replace(/["\s]/g, ''), // Remove quotes and spaces
-      },
-      // Add timeout settings for serverless
-      connectionTimeout: 10000, // 10 seconds
-      greetingTimeout: 10000,
-      socketTimeout: 10000,
-      // Add pool and rate limiting for better reliability
-      pool: true,
-      maxConnections: 1,
-      maxMessages: 3,
-      // Add logger for debugging (remove in production if needed)
-      logger: process.env.NODE_ENV === 'development',
-      debug: process.env.NODE_ENV === 'development',
-    })
-
-    // Skip verification in production to avoid timeout - verify happens on send anyway
-    // await transporter.verify()
-
-    // Email content
-    const htmlContent = `
-      <!DOCTYPE html>
-      <html>
-        <head>
-          <meta charset="utf-8">
-          <title>New Contact Form Submission</title>
-          <style>
-            body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
-            .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-            .header { background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 20px; }
-            .content { background: #ffffff; padding: 20px; border: 1px solid #e9ecef; border-radius: 8px; }
-            .field { margin-bottom: 15px; }
-            .label { font-weight: bold; color: #495057; }
-            .value { margin-top: 5px; padding: 10px; background: #f8f9fa; border-radius: 4px; }
-            .footer { margin-top: 20px; padding: 20px; text-align: center; color: #6c757d; font-size: 14px; }
-          </style>
-        </head>
-        <body>
-          <div class="container">
-            <div class="header">
-              <h2>New Contact Form Submission</h2>
-              <p>You have received a new message from your portfolio website.</p>
-            </div>
-            
-            <div class="content">
-              <div class="field">
-                <div class="label">Name:</div>
-                <div class="value">${escapeHtml(validatedData.name)}</div>
-              </div>
-
-              <div class="field">
-                <div class="label">Email:</div>
-                <div class="value">${escapeHtml(validatedData.email)}</div>
-              </div>
-
-              <div class="field">
-                <div class="label">Subject:</div>
-                <div class="value">${escapeHtml(validatedData.subject)}</div>
-              </div>
-
-              <div class="field">
-                <div class="label">Message:</div>
-                <div class="value">${escapeHtml(validatedData.message).replace(/\n/g, '<br>')}</div>
-              </div>
-            </div>
-            
-            <div class="footer">
-              <p>This email was sent from your portfolio contact form.</p>
-              <p>Time: ${new Date().toLocaleString()}</p>
-            </div>
-          </div>
-        </body>
-      </html>
-    `
-
-    // Send email
-    await transporter.sendMail({
-      from: `"Portfolio Contact" <${process.env.SMTP_USER}>`,
-      to: process.env.CONTACT_EMAIL || process.env.SMTP_USER,
-      subject: `Portfolio Contact: ${validatedData.subject}`,
-      text: `
-Name: ${validatedData.name}
-Email: ${validatedData.email}
-Subject: ${validatedData.subject}
-
-Message:
-${validatedData.message}
-
----
-Sent from portfolio contact form at ${new Date().toLocaleString()}
-      `,
-      html: htmlContent,
-      replyTo: validatedData.email,
-    })
-
-    // Optional: Send auto-reply to the sender
-    if (process.env.SEND_AUTO_REPLY === 'true') {
-      await transporter.sendMail({
-        from: `"Raymond Valdepeñas" <${process.env.SMTP_USER}>`,
-        to: validatedData.email,
-        subject: 'Thank you for your message!',
-        text: `
-Hi ${validatedData.name},
-
-Thank you for reaching out! I've received your message and will get back to you as soon as possible.
-
-Best regards,
-Raymond Valdepeñas
-Full Stack Developer
-
-Portfolio: https://raymondvaldepenas-dev.vercel.app
-GitHub: https://github.com/RMV-Coder
-
----
-This is an automated response from my portfolio contact form.
-        `,
-        html: `
-          <!DOCTYPE html>
-          <html>
-            <head>
-              <meta charset="utf-8">
-              <title>Thank you for your message!</title>
-              <style>
-                body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
-                .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-                .header { background: #007bff; color: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; }
-                .content { background: #ffffff; padding: 20px; border: 1px solid #e9ecef; border-radius: 8px; }
-                .signature { margin-top: 30px; padding-top: 20px; border-top: 1px solid #e9ecef; }
-                .signature-name { font-weight: bold; color: #007bff; margin-bottom: 5px; }
-                .signature-title { color: #6c757d; margin-bottom: 10px; font-style: italic; }
-                .signature-links { margin-top: 10px; }
-                .signature-links a { color: #007bff; text-decoration: none; margin-right: 15px; }
-                .signature-links a:hover { text-decoration: underline; }
-                .automated-note { margin-top: 15px; padding-top: 15px; border-top: 1px solid #f1f1f1; color: #6c757d; font-size: 12px; font-style: italic; }
-              </style>
-            </head>
-            <body>
-              <div class="container">
-                <div class="header">
-                  <h2>Thank you for your message!</h2>
-                </div>
-                
-                <div class="content">
-                  <p>Hi ${escapeHtml(validatedData.name)},</p>
-                  
-                  <p>Thank you for reaching out! I've received your message and will get back to you as soon as possible.</p>
-                  
-                  <div class="signature">
-                    <div class="signature-name">Raymond Valdepeñas</div>
-                    <div class="signature-title">Full Stack Developer</div>
-                    <div class="signature-links">
-                      <a href="https://raymondvaldepenas-dev.vercel.app" target="_blank">Portfolio</a>
-                      <a href="https://github.com/RMV-Coder" target="_blank">GitHub</a>
-                    </div>
-                    <div class="automated-note">
-                      This is an automated response from my portfolio contact form.
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </body>
-          </html>
-        `,
-      })
-    }
-
+  if (!allow(clientIp(request))) {
     return NextResponse.json(
-      { message: 'Email sent successfully!' },
-      { status: 200 }
-    )
-
-  } catch (error) {
-    console.error('Contact form error:', error)
-    
-    // Log detailed error information for debugging
-    if (error instanceof Error) {
-      console.error('Error details:', {
-        name: error.name,
-        message: error.message,
-        stack: error.stack,
-      })
-    }
-    
-    // Handle validation errors
-    if (error instanceof Error && error.name === 'ZodError') {
-      return NextResponse.json(
-        { error: 'Invalid form data. Please check your inputs.' },
-        { status: 400 }
-      )
-    }
-    
-    // Handle nodemailer/SMTP errors
-    if (error instanceof Error) {
-      // Authentication errors
-      if (error.message.includes('Invalid login') || error.message.includes('authentication')) {
-        console.error('SMTP Authentication failed - check credentials')
-        return NextResponse.json(
-          { error: 'Email service authentication failed. Please contact the administrator.' },
-          { status: 503 }
-        )
-      }
-      
-      // Connection errors
-      if (error.message.includes('SMTP') || error.message.includes('connect') || error.message.includes('timeout')) {
-        console.error('SMTP Connection failed:', error.message)
-        return NextResponse.json(
-          { error: 'Email service temporarily unavailable. Please try again later.' },
-          { status: 503 }
-        )
-      }
-    }
-    
-    return NextResponse.json(
-      { error: 'Internal server error. Please try again later.' },
-      { status: 500 }
+      { error: "That's a lot of messages in a short time. Try again in a few minutes." },
+      { status: 429 }
     )
   }
+
+  const parsed = contactFormSchema.safeParse(await request.json().catch(() => null))
+  if (!parsed.success) {
+    return NextResponse.json(
+      { error: "Some of the details don't look right. Check the form and try again." },
+      { status: 400 }
+    )
+  }
+  const { name, email, message } = parsed.data
+  const subject = singleLine(parsed.data.subject)
+
+  const to = ownerEmail()
+  if (!to) {
+    console.error('[contact] no address to deliver to: set CONTACT_EMAIL or SMTP_USER')
+    return NextResponse.json({ error: NOT_WORKING }, { status: 503 })
+  }
+
+  // UTC, so the time means the same thing wherever the server happens to run.
+  const sentAt = new Date().toUTCString()
+  const outcome = await sendMail({
+    to,
+    fromName: 'Portfolio contact',
+    replyTo: email,
+    subject: `Portfolio contact: ${subject}`,
+    text: [
+      `Name: ${name}`,
+      `Email: ${email}`,
+      `Subject: ${subject}`,
+      '',
+      'Message:',
+      message,
+      '',
+      '---',
+      `Sent from the portfolio contact form, ${sentAt}`,
+    ].join('\n'),
+    html: `<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>New message from the portfolio</title>
+    <style>
+      body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+      .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+      .header { background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 20px; }
+      .content { background: #ffffff; padding: 20px; border: 1px solid #e9ecef; border-radius: 8px; }
+      .field { margin-bottom: 15px; }
+      .label { font-weight: bold; color: #495057; }
+      .value { margin-top: 5px; padding: 10px; background: #f8f9fa; border-radius: 4px; }
+      .footer { margin-top: 20px; padding: 20px; text-align: center; color: #6c757d; font-size: 14px; }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h2>New message from the portfolio</h2>
+        <p>Replying to this email answers ${escapeHtml(name)} directly.</p>
+      </div>
+      <div class="content">
+        <div class="field"><div class="label">Name</div><div class="value">${escapeHtml(name)}</div></div>
+        <div class="field"><div class="label">Email</div><div class="value">${escapeHtml(email)}</div></div>
+        <div class="field"><div class="label">Subject</div><div class="value">${escapeHtml(subject)}</div></div>
+        <div class="field"><div class="label">Message</div><div class="value">${escapeHtml(message).replace(/\n/g, '<br>')}</div></div>
+      </div>
+      <div class="footer"><p>Sent from the portfolio contact form, ${escapeHtml(sentAt)}</p></div>
+    </div>
+  </body>
+</html>`,
+  })
+
+  if (outcome === 'failed') {
+    return NextResponse.json({ error: NOT_NOW }, { status: 503 })
+  }
+  if (outcome === 'skipped') {
+    return NextResponse.json({ error: NOT_WORKING }, { status: 503 })
+  }
+
+  // Optional acknowledgement to the sender. Its outcome does not change the
+  // answer: the message itself has already been delivered.
+  if (process.env.SEND_AUTO_REPLY === 'true') {
+    await sendMail({
+      to: email,
+      subject: 'Thanks for your message',
+      text: [
+        `Hi ${name},`,
+        '',
+        "Thanks for getting in touch. Your message reached me and I'll reply by email.",
+        '',
+        'Raymond Valdepeñas',
+        'Software developer',
+        '',
+        `Portfolio: ${SITE_URL}`,
+        `GitHub: ${PROFILES.github}`,
+        '',
+        '---',
+        'This is an automatic acknowledgement from my portfolio contact form.',
+      ].join('\n'),
+      html: `<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Thanks for your message</title>
+    <style>
+      body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+      .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+      .content { background: #ffffff; padding: 20px; border: 1px solid #e9ecef; border-radius: 8px; }
+      .signature { margin-top: 30px; padding-top: 20px; border-top: 1px solid #e9ecef; }
+      .signature a { color: #9c3d08; text-decoration: none; margin-right: 15px; }
+      .note { margin-top: 15px; color: #6c757d; font-size: 12px; }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="content">
+        <p>Hi ${escapeHtml(name)},</p>
+        <p>Thanks for getting in touch. Your message reached me and I'll reply by email.</p>
+        <div class="signature">
+          <strong>Raymond Valdepeñas</strong><br>
+          Software developer<br>
+          <a href="${SITE_URL}">Portfolio</a>
+          <a href="${PROFILES.github}">GitHub</a>
+          <p class="note">This is an automatic acknowledgement from my portfolio contact form.</p>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>`,
+    })
+  }
+
+  return NextResponse.json({ message: 'Message sent.' })
 }

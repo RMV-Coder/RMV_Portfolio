@@ -1,30 +1,35 @@
 import type { Metadata, Viewport } from "next";
-import { //Geist, Geist_Mono, 
-  Montserrat } from "next/font/google";
+import { Bricolage_Grotesque, Geist, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Footer } from "@/components/footer";
+import { SiteOnly } from "@/components/site-only";
+import { SkipLink } from "@/components/skip-link";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import { GoogleAnalytics } from '@next/third-parties/google';
 import { identityGraph, professionalServiceStructuredData } from "@/lib/structured-data";
 import { PERSON, SITE, SITE_URL } from "@/lib/site";
 
-const montserrat = Montserrat({
-  variable: "--font-montserrat",
+// Three voices: a characterful grotesque for headlines, a quiet sans for
+// reading, and a mono for the blueprint annotations.
+const display = Bricolage_Grotesque({
+  variable: "--font-display-face",
   subsets: ["latin"],
-  weight: ['400', '700']
+  display: "swap",
 })
 
-// const geistSans = Geist({
-//   variable: "--font-geist-sans",
-//   subsets: ["latin"],
-// });
+const body = Geist({
+  variable: "--font-body",
+  subsets: ["latin"],
+  display: "swap",
+})
 
-// const geistMono = Geist_Mono({
-//   variable: "--font-geist-mono",
-//   subsets: ["latin"],
-// });
+const mono = JetBrains_Mono({
+  variable: "--font-mono-face",
+  subsets: ["latin"],
+  display: "swap",
+})
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -64,8 +69,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: SITE.title,
-    description: SITE.description,
+    // No title or description here on purpose: left unset, Next fills them
+    // from each page's own openGraph, so /tools and /research share on X with
+    // their own text instead of the home page's.
     creator: "@mond_valdepenas",
   },
   alternates: {
@@ -83,8 +89,8 @@ export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
   themeColor: [
-    { media: '(prefers-color-scheme: light)', color: '#ffffff' },
-    { media: '(prefers-color-scheme: dark)', color: '#1e293b' },
+    { media: '(prefers-color-scheme: light)', color: '#f4eee5' },
+    { media: '(prefers-color-scheme: dark)', color: '#14110f' },
   ],
 };
 
@@ -119,9 +125,19 @@ export default function RootLayout({
         />
       </head>
       <body
-        className={`${montserrat.variable} antialiased`}
+        className={`${display.variable} ${body.variable} ${mono.variable} font-sans antialiased`}
       >
-        <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID || ''} />
+        {/*
+          Analytics, the skip link and the site footer are public-site chrome.
+          They are left off the admin area and private résumé links, whose URLs
+          carry access tokens that must not be reported to a tracker.
+          Google Analytics renders only when an ID is configured; with an empty
+          ID it would still preload and run the tag script for nothing.
+        */}
+        <SiteOnly>
+          <SkipLink />
+          {process.env.NEXT_PUBLIC_GA_ID && <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID} />}
+        </SiteOnly>
         <ThemeProvider
           attribute="class"
           defaultTheme="dark"
@@ -129,9 +145,11 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           {children}
-          <Analytics />
-          <SpeedInsights />
-          <Footer />
+          <SiteOnly>
+            <Analytics />
+            <SpeedInsights />
+            <Footer />
+          </SiteOnly>
         </ThemeProvider>
       </body>
     </html>
