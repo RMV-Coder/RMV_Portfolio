@@ -11,8 +11,8 @@ const contentSecurityPolicy = [
   "font-src 'self' fonts.gstatic.com fonts.googleapis.com",
   "img-src 'self' data: blob: https://www.googletagmanager.com https://avatars.githubusercontent.com https://raw.githubusercontent.com",
   `connect-src 'self'${isDev ? " ws: wss:" : ""} https://www.google-analytics.com https://analytics.google.com https://www.googletagmanager.com https://vitals.vercel-insights.com https://va.vercel-scripts.com`,
-  // The AetherForm demo (this site's /demos) and the live Emmaus site are framed on /tools.
-  "frame-src 'self' https://emmaus-sepia.vercel.app",
+  // The AetherForm demo (this site's /demos) and the live Emmaus and SyntaxLab sites are framed on /tools.
+  "frame-src 'self' https://emmaus-sepia.vercel.app https://syntaxlab-nine.vercel.app",
   "object-src 'none'",
   "base-uri 'self'",
   "form-action 'self'",

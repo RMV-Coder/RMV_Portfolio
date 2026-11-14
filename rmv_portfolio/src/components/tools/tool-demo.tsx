@@ -13,7 +13,7 @@ const HINTS: Record<ToolSlug, string> = {
   localpass: "Try it: unlock the vault, then reveal a password",
   veltriva: "Press Tidy up, then search memory for film",
   emmaus: "Tap the highlighted question, then a verse reference.",
-  syntaxlab: "Press Analyze, then tap or point at any word.",
+  syntaxlab: "The live site. Type a sentence and press Analyze.",
   "calculus-solver": "Press Solve to see every step.",
   veyra: "Try it: make the mistake, then undo it",
   omnigraph: "Trace a checkout, then tap any circle to follow it",
