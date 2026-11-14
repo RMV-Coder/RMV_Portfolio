@@ -50,7 +50,10 @@ const LABELS: Record<Label, { name: string; color: string }> = {
   disputed: { name: "Disputed", color: C.danger },
 }
 
-const QUESTION = "Does Romans 8:28 mean everything happens for a reason?"
+/** The deployed app, shown as-is under "Live site". Keep in step with links.web in data/tools.ts. */
+const LIVE_URL = "https://emmaus-sepia.vercel.app"
+
+const QUESTION ="Does Romans 8:28 mean everything happens for a reason?"
 
 // Quotations inside claims follow the KJV wording so they match the drawer.
 const CLAIMS: Claim[] = [
@@ -106,6 +109,7 @@ export default function EmmausDemo() {
   const [verse, setVerse] = React.useState<VerseKey | null>(null)
   const [traditionsOpen, setTraditionsOpen] = React.useState(false)
   const [used, setUsed] = React.useState(false)
+  const [view, setView] = React.useState<"demo" | "live">("demo")
   const timers = React.useRef<number[]>([])
   const scrollBox = React.useRef<HTMLDivElement>(null)
   // The verse button that opened the drawer. Closing the drawer unmounts its
@@ -163,21 +167,71 @@ export default function EmmausDemo() {
 
   const open = verse ? VERSES[verse] : null
 
+  const palette = {
+    bg: "#FAF7F0",
+    chrome: C.surface,
+    border: "#E4DFD3",
+    text: "#1E1B16",
+    muted: "#5C5648",
+    accent: "#8A6D3B",
+  }
+  const switcher = (
+    <div role="group" aria-label="Emmaus view" className="flex shrink-0 rounded-md p-0.5 text-xs" style={{ background: "var(--demo-bg)" }}>
+      {([["demo", "Demo"], ["live", "Live site"]] as const).map(([value, text]) => (
+        <button
+          key={value}
+          type="button"
+          aria-pressed={view === value}
+          onClick={() => setView(value)}
+          className={`rounded px-2 py-0.5 ${FOCUS}`}
+          style={view === value ? { background: C.surface, color: "var(--demo-text)", boxShadow: "0 1px 2px rgba(0,0,0,0.08)" } : { color: "var(--demo-muted)" }}
+        >
+          {text}
+        </button>
+      ))}
+    </div>
+  )
+
+  if (view === "live") {
+    return (
+      <DemoShell
+        variant="browser"
+        title="Emmaus"
+        address={LIVE_URL.replace("https://", "")}
+        palette={palette}
+        hint="The deployed site, live. Reading and asking need a free account."
+        actions={switcher}
+      >
+        <iframe
+          src={LIVE_URL}
+          title="Emmaus, the live site"
+          loading="lazy"
+          referrerPolicy="strict-origin-when-cross-origin"
+          className="h-full w-full border-0"
+          style={{ background: palette.bg }}
+        />
+        <a
+          href={LIVE_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          className={`absolute bottom-3 right-3 rounded-md px-2.5 py-1 text-xs font-medium shadow ${FOCUS}`}
+          style={{ background: palette.accent, color: C.surface }}
+        >
+          Open in a new tab
+        </a>
+      </DemoShell>
+    )
+  }
+
   return (
     <DemoShell
       variant="browser"
       title="Emmaus"
       address="emmaus — ask"
-      palette={{
-        bg: "#FAF7F0",
-        chrome: C.surface,
-        border: "#E4DFD3",
-        text: "#1E1B16",
-        muted: "#5C5648",
-        accent: "#8A6D3B",
-      }}
+      palette={palette}
       hint="Tap the highlighted question, then a verse reference."
       onReset={reset}
+      actions={switcher}
     >
       <div className="@container flex h-full flex-col">
         <div className="shrink-0 border-b px-4 pb-3 pt-3" style={{ borderColor: "var(--demo-border)" }}>
