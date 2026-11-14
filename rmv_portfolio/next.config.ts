@@ -11,10 +11,29 @@ const contentSecurityPolicy = [
   "font-src 'self' fonts.gstatic.com fonts.googleapis.com",
   "img-src 'self' data: blob: https://www.googletagmanager.com https://avatars.githubusercontent.com https://raw.githubusercontent.com",
   `connect-src 'self'${isDev ? " ws: wss:" : ""} https://www.google-analytics.com https://analytics.google.com https://www.googletagmanager.com https://vitals.vercel-insights.com https://va.vercel-scripts.com`,
-  "frame-src 'none'",
+  // The AetherForm demo (this site's /demos) and the live Emmaus and SyntaxLab sites are framed on /tools.
+  "frame-src 'self' https://emmaus-sepia.vercel.app https://syntaxlab-nine.vercel.app",
   "object-src 'none'",
   "base-uri 'self'",
   "form-action 'self'",
+].join("; ");
+
+// The AetherForm web demo (public/demos/aetherform), built by the AetherForm repo. It is the
+// real app: it compiles WebAssembly (sql.js and MediaPipe), runs the pose model in a worker,
+// plays its sample clip, and its meal search may call Open Food Facts. Only this site frames it.
+const demoContentSecurityPolicy = [
+  "default-src 'self'",
+  "script-src 'self' 'wasm-unsafe-eval'",
+  "worker-src 'self' blob:",
+  "style-src 'self' 'unsafe-inline'",
+  "font-src 'self' data:",
+  "img-src 'self' data: blob:",
+  "media-src 'self' blob:",
+  "connect-src 'self' data: blob: https://world.openfoodfacts.org",
+  "object-src 'none'",
+  "base-uri 'self'",
+  "form-action 'self'",
+  "frame-ancestors 'self'",
 ].join("; ");
 
 const nextConfig: NextConfig = {
@@ -44,7 +63,8 @@ const nextConfig: NextConfig = {
   async headers() {
     return [
       {
-        source: '/(.*)',
+        // Everything but /demos, which carries its own policy below.
+        source: '/((?!demos/).*)',
         headers: [
           {
             key: 'Content-Security-Policy',
@@ -74,6 +94,19 @@ const nextConfig: NextConfig = {
             key: 'Permissions-Policy',
             value: 'camera=(), microphone=(), geolocation=(), payment=(), usb=(), screen-wake-lock=()',
           },
+        ],
+      },
+      // Embedded app demos: framed by this site only, never indexed as pages of their own.
+      {
+        source: '/demos/:path*',
+        headers: [
+          { key: 'Content-Security-Policy', value: demoContentSecurityPolicy },
+          { key: 'Strict-Transport-Security', value: 'max-age=63072000; includeSubDomains; preload' },
+          { key: 'X-Content-Type-Options', value: 'nosniff' },
+          { key: 'X-Frame-Options', value: 'SAMEORIGIN' },
+          { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
+          { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=(), payment=(), usb=()' },
+          { key: 'X-Robots-Tag', value: 'noindex' },
         ],
       },
       // Private areas: never indexed, never cached, and no referrer — a

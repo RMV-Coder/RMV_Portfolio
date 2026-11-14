@@ -36,6 +36,8 @@ interface DemoShellProps {
   hint: string
   /** Restores the demo to its opening state. */
   onReset?: () => void
+  /** Extra controls in the title bar, before Reset (e.g. a switch to the live site). */
+  actions?: React.ReactNode
   children: React.ReactNode
   className?: string
 }
@@ -56,6 +58,7 @@ export function DemoShell({
   palette,
   hint,
   onReset,
+  actions,
   children,
   className = "",
 }: DemoShellProps) {
@@ -104,6 +107,7 @@ export function DemoShell({
               {title}
             </span>
           )}
+          {actions}
           {onReset && (
             <button
               type="button"

@@ -13,15 +13,35 @@ const HINTS: Record<ToolSlug, string> = {
   localpass: "Try it: unlock the vault, then reveal a password",
   veltriva: "Press Tidy up, then search memory for film",
   emmaus: "Tap the highlighted question, then a verse reference.",
-  syntaxlab: "Press Analyze, then tap or point at any word.",
+  syntaxlab: "The live site. Type a sentence and press Analyze.",
   "calculus-solver": "Press Solve to see every step.",
   veyra: "Try it: make the mistake, then undo it",
   omnigraph: "Trace a checkout, then tap any circle to follow it",
-  aetherform: "Press Start set, then try Common mistake.",
+  aetherform: "The real app with sample data. Open Log, then Count with camera.",
 }
 
 /** Holds the demo's exact footprint, caption included, so nothing jumps when it loads. */
 function DemoPlaceholder({ slug }: { slug: ToolSlug }) {
+  // AetherForm is the real app in a phone frame (aetherform-demo.tsx): 360 x 740 at 0.78, plus the bezel.
+  if (slug === "aetherform") {
+    return (
+      <div>
+        <div className="flex justify-center">
+          <div
+            className="flex items-center justify-center rounded-[2.25rem] border-[6px] border-border bg-card"
+            style={{ width: 360 * 0.78 + 12, height: 740 * 0.78 + 12 }}
+          >
+            <span className="font-mono text-xs text-muted-foreground motion-safe:animate-pulse">Loading the demo…</span>
+          </div>
+        </div>
+        <div className="invisible mt-3 font-mono text-xs" aria-hidden="true">Version</div>
+        <div className="invisible mt-3 flex items-center gap-2 font-mono text-xs" aria-hidden="true">
+          <span className="h-px w-6 bg-current opacity-50" />
+          {HINTS[slug]}
+        </div>
+      </div>
+    )
+  }
   return (
     <div>
       <div className="flex h-[440px] items-center justify-center rounded-xl border border-border bg-card sm:h-[460px]">
