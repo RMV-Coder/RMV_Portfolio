@@ -47,7 +47,8 @@ export interface Tool {
   tagline: string
   /** Two sentences: what it does and for whom. */
   pitch: string
-  benefits: [ToolBenefit, ToolBenefit, ToolBenefit]
+  /** Three as a rule; a product with more to show (AetherForm) may list a few more. */
+  benefits: [ToolBenefit, ToolBenefit, ToolBenefit, ...ToolBenefit[]]
   /** Short, checkable facts. */
   facts: string[]
   status: { tone: StatusTone; label: string }
@@ -256,11 +257,11 @@ export const tools: Tool[] = [
       },
     ],
     facts: ["English and Filipino", "Open source", "Accessibility-audited on every page"],
-    status: { tone: "preview", label: "Preview" },
-    note: "The website is up, but the parser behind it isn't hosted yet, so it can't analyse sentences online. The demo here shows example analyses in the parser's own format, and the source is open.",
+    status: { tone: "live", label: "Live" },
+    note: "Practice exercises are in English so far, and the Filipino teaching notes are drafts until a specialist reviews them. The parser runs on a small home server, so it may be briefly offline during updates.",
     platforms: ["Web"],
-    unavailable: "Hosted version coming soon",
     links: {
+      web: { label: "Open SyntaxLab", href: "https://syntaxlab-nine.vercel.app" },
       source: "https://github.com/RMV-Coder/SyntaxLab",
     },
     accent: "#F5CF4A",
@@ -269,6 +270,7 @@ export const tools: Tool[] = [
       "Analyses come from Stanza and calamanCy, established open-source parsers. SyntaxLab runs its own evaluation of them and publishes the results, including where they fall short.",
       "The Algorithm Lab runs an Earley parser written from scratch and verified against a brute-force oracle.",
       "Every page is audited against WCAG 2.2 AA in CI, and each diagram has a keyboard path and an equivalent table.",
+      "The site is on Vercel. The parser API runs in Docker on a Raspberry Pi 5 at home, reached through a Cloudflare Tunnel, with a UPS that shuts it down cleanly before the batteries run out.",
     ],
   },
   {
@@ -404,37 +406,47 @@ export const tools: Tool[] = [
     slug: "aetherform",
     figure: "08",
     name: "AetherForm",
-    kind: "AI workout coach",
+    kind: "Home training app",
     gist: "workout coach",
-    tagline: "A coach that counts your reps and corrects your form.",
+    tagline: "A training app that counts your reps, shows you the move and keeps you coming back.",
     pitch:
-      "AetherForm watches you exercise through a camera, counts every rep and tells you the moment your form slips. It is built to run on a small computer at home, so the video never leaves your house.",
+      "AetherForm is an Android app for training at home. Log workouts, meals, water and runs, follow a weekly plan, and level up through daily quests, while the phone's camera counts your reps. An optional hub at home adds up to four cameras that watch your form.",
     benefits: [
       {
-        title: "Hands-free counting",
-        detail: "It counts squats, push-ups, curls and raises on its own, and times your planks.",
+        title: "Counts your reps for you",
+        detail: "Prop the phone up and it counts squats, push-ups, curls and raises from the camera. With the home hub it also calls out your form: \"Chest up.\" \"Go a little deeper.\"",
       },
       {
-        title: "Cues while you move",
-        detail: "\"Chest up.\" \"Go a little deeper.\" Shown on screen and spoken aloud, right when it matters.",
+        title: "Shows you the movement",
+        detail: "A 3D anatomical figure performs over 40 exercises with the working muscles lit and a cue for each part of the rep. A body map shows which muscles you trained this week.",
+      },
+      {
+        title: "Logging that keeps you going",
+        detail: "Sets, meals, water, weigh-ins and runs take a few taps. Every entry earns XP towards levels and ranks, with three daily quests and a streak graph to keep.",
+      },
+      {
+        title: "Meals and runs, covered",
+        detail: "Scan a barcode, search the built-in foods or pick from 47 recipes, against calorie and protein targets for each meal. Runs come in from Strava or Health Connect, and weigh-ins from a Bluetooth scale.",
       },
       {
         title: "Private by design",
-        detail: "Your video is analysed at home and never uploaded. The AI coach is optional and stays off until you add your own key from an AI provider. Once on, it sends that provider text summaries, plus any meal photo you choose to send.",
+        detail: "Everything stays on your phone, with no account. The AI coach, which plans your week and suggests meals, is optional and uses your own Groq or Gemini key. It sees text summaries, plus any meal photo you choose to send.",
       },
     ],
-    facts: ["Up to four cameras for a 3D view", "Seven camera-tracked exercises", "Android app"],
+    facts: ["Works offline, no account", "3D avatar for 40+ exercises", "Camera rep counting on the phone", "Up to four cameras with the home hub"],
     status: { tone: "building", label: "In development" },
-    note: "Built for one person training at home, not for gyms. Not published yet.",
-    platforms: ["Raspberry Pi 5", "Android"],
+    note: "Built for one person training at home, not for gyms. Not published yet: the demo is the app itself, with sample data and a sample video in place of the camera.",
+    platforms: ["Android", "Raspberry Pi 5 (optional hub)"],
     unavailable: "Not released yet",
     links: {},
     accent: "#FFB648",
-    builtWith: "Python, MediaPipe, React, Raspberry Pi",
+    builtWith: "React, Capacitor, MediaPipe, three.js, Python",
     engineering: [
-      "Pose estimation is built for a Raspberry Pi 5 and so far has been tested on a laptop. Reps are counted from joint angles: a squat counts when the knee passes below 100 degrees and returns above 155.",
-      "Two to four calibrated cameras are fused into a single 3D view of the lifter.",
-      "The Android app works without the hub and can count reps on the phone itself. Frames and keypoints never leave the device.",
+      "The phone counts reps itself: MediaPipe pose estimation runs in a worker, and a rep counts from joint angles (a squat when the knee passes below 100 degrees and returns above 155). The counter is a port of the hub's Python one, checked against vectors the Python class generates.",
+      "The exercise figure is an anatomical 3D model drawn with three.js. Each movement is solved from a joint-angle description, and the muscles it works are tinted.",
+      "Data lives in SQLite on the phone. Updates are signed and checked before install, and the app snapshots the database and writes a backup before every migration or update.",
+      "The hub, built for a Raspberry Pi 5 and so far tested on a laptop, fuses two to four calibrated cameras into one 3D view of the lifter.",
+      "The demo on this page is the app's own web build, republished with every release, so it shows exactly what ships.",
     ],
   },
 ]
